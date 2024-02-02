@@ -8,6 +8,7 @@ const userSchema = new Schema({
   gamesWon: { type: Number, default: 0 },
   totalGuesses: { type: Number, default: 0 },
   secondsPlayed: { type: Number, default: 0 },
+  lastGameTime: { type: Date, default: Date.now },
 });
 
 // Game Schema
