@@ -7,6 +7,15 @@ const socket = io('http://localhost:5000'); // Connect to the backend server
 
 const StatScreen = () => {
   const [stats, setStats] = useState([]);
+  const [timeHorizon, setTimeHorizon] = useState('all'); // 'all' or 'lastHour'
+
+  const filterStatsByTime = (stats, timeHorizon) => {
+    if (timeHorizon === 'lastHour') {
+      const oneHourAgo = new Date(new Date().getTime() - (60 * 60 * 1000));
+      return stats.filter(stat => new Date(stat.lastGameTime) > oneHourAgo);
+    }
+    return stats; // Return all stats for 'all'
+  };
 
   // Define columns for react-table
   const columns = useMemo(() => [
@@ -24,7 +33,7 @@ const StatScreen = () => {
     const fetchStats = async () => {
       const response = await fetch('http://localhost:5000/stats');
       const data = await response.json();
-      setStats(data);
+      setStats(filterStatsByTime(data, timeHorizon));
     };
 
     fetchStats();
@@ -36,7 +45,7 @@ const StatScreen = () => {
     return () => {
       socket.off('updateStats');
     };
-  }, []);
+  }, [timeHorizon]);
 
   // React table hook
   const {
@@ -52,6 +61,10 @@ const StatScreen = () => {
   return (
     <div>
       <h2>Player Stats</h2>
+      <div>
+        <button onClick={() => setTimeHorizon('all')}>All Time</button>
+        <button onClick={() => setTimeHorizon('lastHour')}>Last Hour</button>
+      </div>
       <table {...getTableProps()} className="stats-table">
         <thead>
           {headerGroups.map(headerGroup => (

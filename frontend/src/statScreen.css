@@ -1,29 +1,81 @@
-  .statScreen {
-    margin: 20px;
-    font-family: Arial, sans-serif;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
   }
   
-  table {
+  h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .stats-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* Ensure consistent column widths */
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   }
   
-  th, td {
+  .stats-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
     text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
   }
   
-  th {
-    background-color: #f2f2f2;
-    cursor: pointer; 
-    position: relative; 
+  .stats-table th,
+  .stats-table td {
+    padding: 12px 15px;
+    overflow: hidden; /* Hide overflow and use ellipsis for text */
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Keep content on a single line */
   }
   
-  th::after {
-    content: "";
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    border: 5px solid transparent;
+  .stats-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .stats-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .stats-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+  
+  .stats-table tbody tr.active-row,
+  .highlight-player { /* Combine similar selectors */
+    font-weight: bold;
+    color: #009879;
+    background-color: #daffef; /* Only applies to .highlight-player */
+  }
+  
+  button {
+    background-color: #009879;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #00795f;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  
+  @media screen and (max-width: 600px) {
+    button {
+      padding: 8px;
+      font-size: 0.8em;
+    }
   }
