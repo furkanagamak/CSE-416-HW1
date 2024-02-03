@@ -84,6 +84,7 @@ io.on("connection", (socket) => {
   console.log(`${socket.id} is connected!`);
 
   const user = new User({ username: socket.id });
+  user.save();
 
   socket.on("submit guess", (guess, roomId) => {
     const numOfMatching = 0;
@@ -116,11 +117,6 @@ io.on("connection", (socket) => {
     if (waitingPlayer && waitingPlayer.id === socket.id) waitingPlayer = null;
     console.log(`${socket.id} has disconnected!`);
   });
-});
-
-const PORT = 5000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
 
 // Route to get stats
