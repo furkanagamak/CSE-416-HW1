@@ -8,7 +8,6 @@ const userSchema = new Schema({
   gamesWon: { type: Number, default: 0 },
   totalGuesses: { type: Number, default: 0 },
   secondsPlayed: { type: Number, default: 0 },
-  lastGameTime: { type: Date, default: Date.now },
 });
 
 // Game Schema
@@ -21,7 +20,9 @@ const gameSchema = new Schema({
 const playerGameStatsSchema = new Schema({
   player_id: { type: Schema.Types.ObjectId, ref: "User" },
   game_id: { type: Schema.Types.ObjectId, ref: "Game" },
-  timeTakenSecs: Number,
+  totalGuesses: { type: Number, default: 0 },
+  secondsPlayed: { type: Number, default: 0 },
+  isWinner: { type: Boolean, default: false },
 });
 
 // Message Schema
