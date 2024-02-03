@@ -1,0 +1,29 @@
+  .statScreen {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    cursor: pointer; 
+    position: relative; 
+  }
+  
+  th::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    border: 5px solid transparent;
+  }
