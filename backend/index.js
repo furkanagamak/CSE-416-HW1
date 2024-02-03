@@ -118,6 +118,11 @@ io.on("connection", (socket) => {
   });
 });
 
+const PORT = 5000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 // Route to get stats
 app.get("/stats", async (req, res) => {
   try {
@@ -186,6 +191,20 @@ app.get("/stats/lasthour", async (req, res) => {
     console.error("Error fetching last hour stats:", err);
     res.status(500).send("Error fetching last hour stats");
   }
+});
+
+// Socket.io for real-time updates
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  socket.on("gameCompleted", async () => {
+    const stats = await User.find({});
+    io.sockets.emit("updateStats", stats);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
 });
 
 // Creates a user.
