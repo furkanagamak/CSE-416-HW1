@@ -8,6 +8,9 @@ const cors = require("cors");
 
 const { User, Game, PlayerGameStats, Message } = require('./models');
 
+const fs = require('fs').promises; 
+const filePath = './wordList.txt';
+
 mongoose.connect('mongodb://127.0.0.1:27017/guess5', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected.'))
   .catch(err => {
@@ -81,3 +84,15 @@ app.post("/user", async (req, res) => {
   }
 }
 );
+
+// Function to check if a word exists in a .txt file
+async function checkWordExists(word) {
+  try {
+    const data = await fs.readFile(filePath, 'utf8');
+    const words = data.split(/\r?\n/); // Split the file content by new line to get an array of words
+    return words.includes(word); // Check if the word exists in the array
+  } catch (err) {
+    console.error('Error reading file:', err);
+    return false; // Return false in case of an error
+  }
+}
