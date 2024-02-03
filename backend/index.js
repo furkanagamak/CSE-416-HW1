@@ -58,6 +58,69 @@ app.get("/stats", async (req, res) => {
   }
 });
 
+app.get("/stats/lasthour", async (req, res) => {
+  try {
+    const oneHourAgo = new Date(new Date().getTime() - (60*60*1000));
+
+    const lastHourGames = await Game.aggregate([
+      {
+        $match: {
+          timeStarted: { $gte: oneHourAgo }
+        }
+      },
+      {
+        $lookup: {
+          from: "playergamestats",
+          localField: "_id",
+          foreignField: "game_id",
+          as: "playerStats"
+        }
+      },
+      {
+        $unwind: "$playerStats"
+      },
+      {
+        $group: {
+          _id: "$playerStats.player_id",
+          totalGuesses: { $sum: "$playerStats.totalGuesses" },
+          secondsPlayed: { $sum: "$playerStats.secondsPlayed" },
+          gamesPlayed: { $sum: 1 },
+          gamesWon: { $sum: { $cond: ["$playerStats.isWinner", 1, 0] } }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "playerInfo"
+        }
+      },
+      {
+        $unwind: "$playerInfo"
+      },
+      {
+        $project: {
+          _id: 1,
+          username: "$playerInfo.username",
+          totalGuesses: 1,
+          secondsPlayed: 1,
+          gamesPlayed: 1,
+          gamesWon: 1
+        }
+      }
+    ]);
+
+    res.json(lastHourGames);
+  } catch (err) {
+    console.error("Error fetching last hour stats:", err);
+    res.status(500).send("Error fetching last hour stats");
+  }
+});
+
+
+
+
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -84,6 +147,31 @@ app.post("/user", async (req, res) => {
   }
 }
 );
+
+// Create a game and playerstats (This is just for testing purposes, we should remove it later).
+app.post("/game", async (req, res) => {
+  try {
+    const game = new Game({
+      timeStarted: Date.now(),
+      timeEnd: Date.now(),
+    });
+    await game.save();
+
+    const playerGameStats = new PlayerGameStats({
+      player_id: req.body.player_id,
+      game_id: game._id,
+      totalGuesses: req.body.totalGuesses,
+      secondsPlayed: req.body.secondsPlayed,
+      isWinner: req.body.isWinner
+    });
+    await playerGameStats.save();
+
+    res.status(201).send(playerGameStats);
+    io.sockets.emit('updateStats'); // Emit an event to update stats (This is just for testing purposes, we should remove it later).
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
 
 // Function to check if a word exists in a .txt file
 async function checkWordExists(word) {

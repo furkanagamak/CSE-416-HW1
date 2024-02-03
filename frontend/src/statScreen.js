@@ -9,14 +9,6 @@ const StatScreen = () => {
   const [stats, setStats] = useState([]);
   const [timeHorizon, setTimeHorizon] = useState('all'); // 'all' or 'lastHour'
 
-  const filterStatsByTime = (stats, timeHorizon) => {
-    if (timeHorizon === 'lastHour') {
-      const oneHourAgo = new Date(new Date().getTime() - (60 * 60 * 1000));
-      return stats.filter(stat => new Date(stat.lastGameTime) > oneHourAgo);
-    }
-    return stats; // Return all stats for 'all'
-  };
-
   // Define columns for react-table
   const columns = useMemo(() => [
     { Header: 'Player', accessor: 'username' },
@@ -31,9 +23,11 @@ const StatScreen = () => {
   // Fetch stats on component mount and listen for updates
   useEffect(() => {
     const fetchStats = async () => {
-      const response = await fetch('http://localhost:5000/stats');
-      const data = await response.json();
-      setStats(filterStatsByTime(data, timeHorizon));
+        // Determine the endpoint based on the timeHorizon state
+        const endpoint = timeHorizon === 'all' ? 'http://localhost:5000/stats' : 'http://localhost:5000/stats/lasthour';
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        setStats(data);
     };
 
     fetchStats();
