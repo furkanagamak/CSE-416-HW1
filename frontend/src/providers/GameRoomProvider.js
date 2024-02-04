@@ -18,6 +18,7 @@ export const GameRoomContextProvider = ({ children }) => {
   const [opponentGuesses, setOpponentGuesses] = useState([]);
   const [room, setRoom] = useState(undefined);
   const [inQueue, setInQueue] = useState(false);
+  const [yourTurn, setYourTurn] = useState(false);
   const socket = useSocketContext();
 
   const submitGuess = (guessWord) => {
@@ -42,6 +43,11 @@ export const GameRoomContextProvider = ({ children }) => {
     socket.on("confirm join", (roomId) => {
       setRoom(roomId);
     });
+
+    socket.on("take turn", (playerTakingTurn) => {
+      const checkTurn = playerTakingTurn === socket.id;
+      setYourTurn(checkTurn);
+    });
   });
 
   const contextValue = {
@@ -51,6 +57,7 @@ export const GameRoomContextProvider = ({ children }) => {
     submitGuess,
   };
 
+  if (yourTurn === undefined) return <div>Loading ...</div>;
   if (!inQueue)
     return (
       <div>
@@ -60,8 +67,17 @@ export const GameRoomContextProvider = ({ children }) => {
   if (!room) return <div>Waiting for other players to join ...</div>;
   return (
     <GameRoomContext.Provider value={contextValue}>
+      <Modal isOpen={yourTurn} />
       <h1>Room: {room}</h1>
       {children}
     </GameRoomContext.Provider>
   );
 };
+
+const Modal = ({ isOpen }) => (
+  <div className={`modal ${isOpen ? "" : "open"}`}>
+    <div className="modal-content">
+      <p>Other player is taking their turn...</p>
+    </div>
+  </div>
+);

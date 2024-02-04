@@ -15,6 +15,7 @@ const gameSchema = new Schema({
   roomId: { type: Number, unique: true },
   timeStarted: { type: Date, default: Date.now },
   timeEnd: Date,
+  playerTakingTurn: { type: String },
 });
 
 // PlayerGameStats Schema

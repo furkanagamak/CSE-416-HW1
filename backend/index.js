@@ -48,36 +48,55 @@ const io = socketIo(server, {
 
 let waitingPlayer = null;
 let currentRoomId = 1;
+const secret = "leave";
 
 const initGameInstance = async (player1, player2) => {
+  // decides which player goes first
+  let playerTakingTurn;
+  if (Math.round(Math.random()) === 0) playerTakingTurn = player1;
+  else playerTakingTurn = player2;
+
   // creates game instance
-  const game = new Game({ roomId: currentRoomId });
+  const game = new Game({
+    roomId: currentRoomId,
+    playerTakingTurn: playerTakingTurn.id,
+  });
 
   // initaite players' gameStat instances
-  const playerWait = User.findOne({ username: player1.id });
+  const playerWait = await User.findOne({ username: player1.id });
   const playerWaitStats = new PlayerGameStats({
     player_id: playerWait._id,
     game_id: game._id,
   });
-  const playerJoin = User.findOne({ username: player2.id });
+  const playerJoin = await User.findOne({ username: player2.id });
   const playerJoinStats = new PlayerGameStats({
     player_id: playerJoin._id,
     game_id: game._id,
   });
 
-  game.save();
-  playerWaitStats.save();
-  playerJoinStats.save();
+  await game.save();
+  await playerWaitStats.save();
+  await playerJoinStats.save();
+
+  // associate each player's socket with their game and gameStat instances
+  player1._game = game;
+  player1._gameStats = playerWaitStats;
+  player2._game = game;
+  player2._gameStats = playerJoinStats;
+  player1._opponent = player2;
+  player2._opponent = player1;
 
   // socket operations
   player1.join(currentRoomId);
   player2.join(currentRoomId);
   console.log(`${player1.id} has joined room ${currentRoomId}`);
   console.log(`${player2.id} has joined room ${currentRoomId}`);
+
   io.to(currentRoomId).emit("confirm join", currentRoomId);
+  io.to(currentRoomId).emit("take turn", playerTakingTurn.id);
 
   currentRoomId++;
-  player1 = null;
+  waitingPlayer = null;
 };
 
 io.on("connection", (socket) => {
@@ -86,10 +105,11 @@ io.on("connection", (socket) => {
   const user = new User({ username: socket.id });
   user.save();
 
-  socket.on("submit guess", (guess, roomId) => {
-    const numOfMatching = 0;
-    io.to(roomId).emit("receive guess", guess, numOfMatching, socket.id);
-  });
+  socket._user = user;
+  socket._game = null;
+  socket._gameStats = null;
+  socket._turnStart = null;
+  socket._opponent = null;
 
   socket.on("join queue", () => {
     // no one on the queue
@@ -106,6 +126,22 @@ io.on("connection", (socket) => {
 
       initGameInstance(waitingPlayer, socket);
     }
+  });
+
+  socket.on("submit guess", (guess, roomId) => {
+    if (socket.id !== socket._game.playerTakingTurn)
+      return console.error(
+        "An user attempted to take a turn when it is not their turn"
+      );
+
+    const opponentSecret = secret;
+    const numOfMatching = countCorrectLetters(guess, opponentSecret);
+    socket._gameStats.totalGuesses++;
+    socket._gameStats.save();
+    io.to(roomId).emit("receive guess", guess, numOfMatching, socket.id);
+    socket._game.playerTakingTurn = socket._opponent.id;
+    socket._game.save();
+    io.to(roomId).emit("take turn", socket._opponent.id);
   });
 
   socket.on("gameCompleted", async () => {
@@ -250,6 +286,24 @@ async function checkWordExists(word) {
     console.error("Error reading file:", err);
     return false; // Return false in case of an error
   }
+}
+
+function countCorrectLetters(needle, haystack) {
+  // Convert both needle and haystack to lowercase for case-insensitive comparison
+  needle = needle.toLowerCase();
+  haystack = haystack.toLowerCase();
+
+  let count = 0;
+
+  // Iterate through each character in the needle
+  for (let i = 0; i < needle.length; i++) {
+    // Check if the current character in needle is present in haystack
+    if (haystack.includes(needle[i])) {
+      count++;
+    }
+  }
+
+  return count;
 }
 
 const PORT = 5000;

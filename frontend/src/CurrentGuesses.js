@@ -10,7 +10,7 @@ const CurrentGuesses = () => {
         <h1 className="GuessBoard-Header">My Guesses</h1>
         <ul className="GuessBoard-List">
           {myGuesses.map((myGuess) => (
-            <li>{myGuess.guessWord}</li>
+            <li>{`${myGuess.guessWord} ${myGuess.numOfMatching}`}</li>
           ))}
         </ul>
       </section>
@@ -18,7 +18,7 @@ const CurrentGuesses = () => {
         <h1 className="GuessBoard-Header">Opponent's Guesses</h1>
         <ul className="GuessBoard-List">
           {opponentGuesses.map((opponentGuess) => (
-            <li>{opponentGuess.guessWord}</li>
+            <li>{`${opponentGuess.guessWord} ${opponentGuess.numOfMatching}`}</li>
           ))}
         </ul>
       </section>
