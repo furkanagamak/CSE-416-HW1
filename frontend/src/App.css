@@ -37,6 +37,20 @@
   background-color: darkgreen;
 }
 
+.button-disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  padding: 10px;
+  border: none;
+  font-size: 1rem;
+  border-radius: 5px;
+}
+
+.button-disabled:hover {
+  background-color: #ccc;
+}
+
 /* GuessBoard */
 .GuessBoard {
   display: flex;
