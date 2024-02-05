@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
+import './PostGameModal.css'; 
 
 const GameRoomContext = createContext(undefined);
 
@@ -13,13 +14,49 @@ export const useGameRoomContext = () => {
   return context;
 };
 
-export const GameRoomContextProvider = ({ children }) => {
+const PostGameModal = ({ stats, setPage }) => {
+  if (!stats || stats.length === 0) return null;
+
+  return (
+    <div className={`modal ${stats ? "open" : ""}`}>
+      <div className="modal-content">
+        <h2>Game Results</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Result</th>
+              <th>Total Guesses</th>
+              <th>Time Played (seconds)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stats.map((playerStats, index) => (
+              <tr key={index}>
+                <td>{playerStats.username}</td>
+                <td>{playerStats.isWinner ? "Won" : "Lost"}</td>
+                <td>{playerStats.totalGuesses}</td>
+                <td>{playerStats.secondsPlayed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button onClick={() => setPage("main")}>Return to Home</button>
+      </div>
+    </div>
+  );
+};
+
+
+export const GameRoomContextProvider = ({ children, setPage}) => {
   const [myGuesses, setMyGuesses] = useState([]);
   const [opponentGuesses, setOpponentGuesses] = useState([]);
   const [room, setRoom] = useState(undefined);
   const [inQueue, setInQueue] = useState(false);
   const [yourTurn, setYourTurn] = useState(false);
   const socket = useSocketContext();
+
+  const [postGameStats, setPostGameStats] = useState(null);
 
   const submitGuess = (guessWord) => {
     if (guessWord.length < 5)
@@ -48,6 +85,19 @@ export const GameRoomContextProvider = ({ children }) => {
       const checkTurn = playerTakingTurn === socket.id;
       setYourTurn(checkTurn);
     });
+
+    socket.on("gameCompleted", (stats) => {
+      setPostGameStats(stats);
+      setYourTurn(true);
+    });
+
+    // Return a cleanup function to remove event listeners
+    return () => {
+      socket.off("gameCompleted");
+      socket.off("receive guess");
+      socket.off("confirm join");
+      socket.off("take turn");
+    };
   });
 
   const contextValue = {
@@ -67,6 +117,7 @@ export const GameRoomContextProvider = ({ children }) => {
   if (!room) return <div>Waiting for other players to join ...</div>;
   return (
     <GameRoomContext.Provider value={contextValue}>
+      <PostGameModal stats={postGameStats} setPage={setPage} />
       <Modal isOpen={yourTurn} />
       <h1>Room: {room}</h1>
       {children}

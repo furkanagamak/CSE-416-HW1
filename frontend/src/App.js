@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       <SocketContextProvider>
         {page === "main" && <MainPage setPage={setPage} />}
-        {page === "game" && <GamePage />}
+        {page === "game" && <GamePage setPage={setPage} />}
       </SocketContextProvider>
     </div>
   );
@@ -31,9 +31,9 @@ const MainPage = ({ setPage }) => {
   );
 };
 
-const GamePage = () => {
+const GamePage = ({ setPage }) => {
   return (
-    <GameRoomContextProvider>
+    <GameRoomContextProvider setPage={setPage}>
       <GuessingController />
       <CurrentGuesses />
     </GameRoomContextProvider>

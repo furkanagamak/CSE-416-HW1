@@ -105,6 +105,8 @@ io.on("connection", (socket) => {
   const user = new User({ username: socket.id });
   user.save();
 
+  io.sockets.emit("updateStats");
+
   socket._user = user;
   socket._game = null;
   socket._gameStats = null;
@@ -128,7 +130,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("submit guess", (guess, roomId) => {
+  socket.on("submit guess", async (guess, roomId) => {
     if (socket.id !== socket._game.playerTakingTurn)
       return console.error(
         "An user attempted to take a turn when it is not their turn"
@@ -137,10 +139,59 @@ io.on("connection", (socket) => {
     const opponentSecret = secret;
     const numOfMatching = countCorrectLetters(guess, opponentSecret);
     socket._gameStats.totalGuesses++;
-    socket._gameStats.save();
+    await socket._gameStats.save();
+
+    // Check if the guess is exactly the same as the secret
+    if (guess === opponentSecret) {
+      socket._game.timeEnd = Date.now();
+      await socket._game.save();
+      socket._gameStats.isWinner = true;
+      socket._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      await socket._gameStats.save();
+      socket._opponent._gameStats.isWinner = false;
+      socket._opponent._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      await socket._opponent._gameStats.save();
+
+      // Use playerGameStatsSchema's player_id field to find the user by ID, then update the user's gamesPlayed, gamesWon, totalGuesses, and secondsPlayed fields
+      const player = await User.findById(socket._gameStats.player_id);
+      player.gamesPlayed++;
+      player.gamesWon++;
+      player.totalGuesses += socket._gameStats.totalGuesses;
+      player.secondsPlayed += socket._gameStats.secondsPlayed;
+      await player.save();
+
+      // Use playerGameStatsSchema's player_id field to find the user by ID, then update the user's gamesPlayed, gamesWon, totalGuesses, and secondsPlayed fields
+      const opponent = await User.findById(socket._opponent._gameStats.player_id);
+      opponent.gamesPlayed++;
+      opponent.totalGuesses += socket._opponent._gameStats.totalGuesses;
+      opponent.secondsPlayed += socket._opponent._gameStats.secondsPlayed;
+      await opponent.save();
+
+      // Calculate post-game statistics to send to the frontend
+      const totalTimeTaken = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      const playerStats = {
+        username: socket._user.username,
+        isWinner: true,
+        totalGuesses: socket._gameStats.totalGuesses,
+        secondsPlayed: totalTimeTaken,
+      };
+      const opponentStats = {
+        username: socket._opponent._user.username,
+        isWinner: false,
+        totalGuesses: socket._opponent._gameStats.totalGuesses,
+        secondsPlayed: totalTimeTaken,
+      };
+
+      // Emit post-game stats to each player
+      socket.emit("gameCompleted", [playerStats, opponentStats]);
+      socket._opponent.emit("gameCompleted", [playerStats, opponentStats]);
+      io.sockets.emit("updateStats");
+      return;
+    }
+
     io.to(roomId).emit("receive guess", guess, numOfMatching, socket.id);
     socket._game.playerTakingTurn = socket._opponent.id;
-    socket._game.save();
+    await socket._game.save();
     io.to(roomId).emit("take turn", socket._opponent.id);
   });
 
