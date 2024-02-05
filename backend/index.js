@@ -138,7 +138,7 @@ io.on("connection", (socket) => {
         "An user attempted to take a turn when it is not their turn"
       );
 
-    const opponentSecret = secret;
+    const opponentSecret = socket._opponent._gameStats.secretWord;
     const numOfMatching = countCorrectLetters(guess, opponentSecret);
     socket._gameStats.totalGuesses++;
     socket._gameStats.timeTakenForGuesses += guessDuration; // Update time taken for guesses
@@ -233,6 +233,10 @@ io.on("connection", (socket) => {
         if (playerStat) {
             playerStat.secretWord = secretWord;
             await playerStat.save();
+
+            // Save the secret word to the socket
+            socket._gameStats.secretWord = secretWord;
+            await socket._gameStats.save();
 
             // Check if both players have submitted their secret words
             const gameStats = await PlayerGameStats.find({ game_id: game._id });

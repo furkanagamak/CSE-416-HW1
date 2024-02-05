@@ -27,13 +27,14 @@ const SecretWordModal = ({ isOpen }) => {
     };
 
     const handleSubmit = () => {
-        const validationError = validateWord(word);
+        const lowerCaseWord = word.toLowerCase(); // Convert the word to lowercase before validation
+        const validationError = validateWord(lowerCaseWord);
         if (validationError) {
             setError(validationError);
             return;
         }
         setError('');
-        socket.emit('submitSecretWord', { roomId: room, secretWord: word });
+        socket.emit('submitSecretWord', { roomId: room, secretWord: lowerCaseWord });
     };
 
     const renderModalContent = () => {
@@ -46,7 +47,7 @@ const SecretWordModal = ({ isOpen }) => {
                         className='secretInput'
                         type="text"
                         value={word}
-                        onChange={(e) => setWord(e.target.value)}
+                        onChange={(e) => setWord(e.target.value.toLowerCase())} // Automatically convert to lowercase
                         maxLength="5"
                     />
                     <button className ='secretButton' onClick={handleSubmit}>Submit</button>

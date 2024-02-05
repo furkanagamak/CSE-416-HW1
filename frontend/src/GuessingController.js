@@ -21,7 +21,7 @@ const GuessingController = () => {
         maxLength={5}
         placeholder="enter your guess word here ..."
         value={word}
-        onChange={(e) => setWord(e.target.value)}
+        onChange={(e) => setWord(e.target.value.toLowerCase())} // Automatically convert to lowercase
         className="guessForm-input"
       />
       <button type="submit" className="greenButton">
