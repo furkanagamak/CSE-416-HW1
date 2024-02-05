@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
+import SecretWordModal from "../SecretWord";
 
 const GameRoomContext = createContext(undefined);
 
@@ -19,7 +20,14 @@ export const GameRoomContextProvider = ({ children }) => {
   const [room, setRoom] = useState(undefined);
   const [inQueue, setInQueue] = useState(false);
   const [yourTurn, setYourTurn] = useState(false);
+  const [isSecretWordSubmitted, setIsSecretWordSubmitted] = useState(false);
+  const [isSecretModalOpen, setIsSecretModalOpen] = useState(true);
+  const [secretModalContent, setSecretModalContent] = useState("enterWord");
   const socket = useSocketContext();
+
+  const handleSecretModalClose = () => {
+    setIsSecretModalOpen(false);
+  };
 
   const submitGuess = (guessWord) => {
     if (guessWord.length < 5)
@@ -48,6 +56,15 @@ export const GameRoomContextProvider = ({ children }) => {
       const checkTurn = playerTakingTurn === socket.id;
       setYourTurn(checkTurn);
     });
+
+    socket.on('secretWordConfirmed', () => {    //listener for secret word submissions
+      setIsSecretWordSubmitted(true);
+      setSecretModalContent("waitingForOpponent");
+    });
+
+    socket.on('gameStart', () => {    //leaves secret word modal open 
+      setIsSecretModalOpen(false);
+    });
   });
 
   const contextValue = {
@@ -55,6 +72,11 @@ export const GameRoomContextProvider = ({ children }) => {
     myGuesses,
     opponentGuesses,
     submitGuess,
+    room,
+    isSecretWordSubmitted,
+    isSecretModalOpen,
+    handleSecretModalClose,
+    secretModalContent,
   };
 
   if (yourTurn === undefined) return <div>Loading ...</div>;
@@ -67,12 +89,14 @@ export const GameRoomContextProvider = ({ children }) => {
   if (!room) return <div>Waiting for other players to join ...</div>;
   return (
     <GameRoomContext.Provider value={contextValue}>
-      <Modal isOpen={yourTurn} />
       <h1>Room: {room}</h1>
+      {isSecretModalOpen && <SecretWordModal isOpen={isSecretModalOpen} onClose={handleSecretModalClose} />}    
+      <Modal isOpen={yourTurn} />
       {children}
     </GameRoomContext.Provider>
   );
 };
+
 
 const Modal = ({ isOpen }) => (
   <div className={`modal ${isOpen ? "" : "open"}`}>

@@ -1,13 +1,12 @@
 import "./App.css";
-import { GameRoomContextProvider } from "./providers/GameRoomProvider";
+import { useState } from "react";
+import { GameRoomContextProvider, useGameRoomContext } from "./providers/GameRoomProvider";
 import { SocketContextProvider } from "./providers/SocketProvider";
-
 import GuessingController from "./GuessingController";
 import CurrentGuesses from "./CurrentGuesses";
-
 import StatScreen from "./statScreen";
-
-import { useState } from "react";
+import ChatBox from "./chatBox";
+import ListBoxContainer from "./userLists";
 
 function App() {
   const [page, setPage] = useState("main");
@@ -36,6 +35,8 @@ const GamePage = () => {
     <GameRoomContextProvider>
       <GuessingController />
       <CurrentGuesses />
+      <ChatBox />
+      <ListBoxContainer />
     </GameRoomContextProvider>
   );
 };

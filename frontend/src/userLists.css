@@ -1,0 +1,20 @@
+.list-box-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.list-text-area {
+    width: 400px;      
+    height: 100px;    
+    /*resize: both;*/
+    overflow: auto;
+    margin: 10px;
+    padding: 5px;
+}
+
+.list-label {
+    font-weight: bold;
+}
