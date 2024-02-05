@@ -27,6 +27,7 @@ const playerGameStatsSchema = new Schema({
   secondsPlayed: { type: Number, default: 0 },
   isWinner: { type: Boolean, default: false },
   secretWord: { type: String},
+  timeTakenForGuesses: { type: Number, default: 0 },
 });
 
 // Message Schema

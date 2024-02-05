@@ -28,7 +28,9 @@ const PostGameModal = ({ stats, setPage }) => {
             <tr>
               <th>Player</th>
               <th>Result</th>
-              <th>Total Guesses</th>
+              <th>Number of Guesses</th>
+              <th>Time Taken for Guesses (seconds)</th>
+              <th>Average Time per Guess (seconds)</th>
               <th>Time Played (seconds)</th>
             </tr>
           </thead>
@@ -38,7 +40,9 @@ const PostGameModal = ({ stats, setPage }) => {
                 <td>{playerStats.username}</td>
                 <td>{playerStats.isWinner ? "Won" : "Lost"}</td>
                 <td>{playerStats.totalGuesses}</td>
-                <td>{playerStats.secondsPlayed}</td>
+                <td>{playerStats.timeTakenForGuesses.toFixed(2)}</td>
+                <td>{playerStats.totalGuesses > 0 ? (playerStats.timeTakenForGuesses / playerStats.totalGuesses).toFixed(2) : 0}</td>
+                <td>{playerStats.secondsPlayed.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -63,6 +67,7 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
   const socket = useSocketContext();
 
   const [postGameStats, setPostGameStats] = useState(null);
+  const [turnStartTime, setTurnStartTime] = useState(null);
 
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
@@ -71,7 +76,11 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
   const submitGuess = (guessWord) => {
     if (guessWord.length < 5)
       return window.alert("You need to enter a 5 letter word");
-    socket.emit("submit guess", guessWord, room);
+    const endTime = Date.now(); // Record the end time when the guess is submitted
+    const duration = turnStartTime ? (endTime - turnStartTime) / 1000 : 0; // Calculate the duration in seconds
+    
+    socket.emit("submit guess", guessWord, room, duration); // Send this duration to the server as well
+    setTurnStartTime(null); // reset the turnStartTime after the guess is submitted
   };
 
   const handleJoinQueue = () => {
@@ -94,6 +103,9 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
     socket.on("take turn", (playerTakingTurn) => {
       const checkTurn = playerTakingTurn === socket.id;
       setYourTurn(checkTurn);
+      if (checkTurn) {
+        setTurnStartTime(Date.now()); // Record the start time when the player's turn starts
+      }
     });
 
     socket.on("gameCompleted", (stats) => {

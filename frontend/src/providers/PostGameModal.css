@@ -6,8 +6,9 @@
   
   .modal-content th, .modal-content td {
     text-align: left;
-    padding: 8px;
+    padding: 8px 16px;
     border-bottom: 1px solid #ddd;
+    min-width: 120px;
   }
   
   .modal-content th {

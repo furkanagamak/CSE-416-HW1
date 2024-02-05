@@ -132,7 +132,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("submit guess", async (guess, roomId) => {
+  socket.on("submit guess", async (guess, roomId, guessDuration) => {
     if (socket.id !== socket._game.playerTakingTurn)
       return console.error(
         "An user attempted to take a turn when it is not their turn"
@@ -141,6 +141,7 @@ io.on("connection", (socket) => {
     const opponentSecret = secret;
     const numOfMatching = countCorrectLetters(guess, opponentSecret);
     socket._gameStats.totalGuesses++;
+    socket._gameStats.timeTakenForGuesses += guessDuration; // Update time taken for guesses
     await socket._gameStats.save();
 
     // Check if the guess is exactly the same as the secret
@@ -148,10 +149,10 @@ io.on("connection", (socket) => {
       socket._game.timeEnd = Date.now();
       await socket._game.save();
       socket._gameStats.isWinner = true;
-      socket._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      socket._gameStats.secondsPlayed = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
       await socket._gameStats.save();
       socket._opponent._gameStats.isWinner = false;
-      socket._opponent._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      socket._opponent._gameStats.secondsPlayed = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
       await socket._opponent._gameStats.save();
 
       // Use playerGameStatsSchema's player_id field to find the user by ID, then update the user's gamesPlayed, gamesWon, totalGuesses, and secondsPlayed fields
@@ -170,18 +171,20 @@ io.on("connection", (socket) => {
       await opponent.save();
 
       // Calculate post-game statistics to send to the frontend
-      const totalTimeTaken = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
+      const totalTimeTaken = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
       const playerStats = {
         username: socket._user.username,
         isWinner: true,
         totalGuesses: socket._gameStats.totalGuesses,
         secondsPlayed: totalTimeTaken,
+        timeTakenForGuesses: socket._gameStats.timeTakenForGuesses,
       };
       const opponentStats = {
         username: socket._opponent._user.username,
         isWinner: false,
         totalGuesses: socket._opponent._gameStats.totalGuesses,
         secondsPlayed: totalTimeTaken,
+        timeTakenForGuesses: socket._opponent._gameStats.timeTakenForGuesses,
       };
 
       // Emit post-game stats to each player
