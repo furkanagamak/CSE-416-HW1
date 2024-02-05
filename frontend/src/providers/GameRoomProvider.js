@@ -41,7 +41,7 @@ const PostGameModal = ({ stats, setPage }) => {
                 <td>{playerStats.isWinner ? "Won" : "Lost"}</td>
                 <td>{playerStats.totalGuesses}</td>
                 <td>{playerStats.timeTakenForGuesses.toFixed(2)}</td>
-                <td>{playerStats.totalGuesses > 0 ? (playerStats.timeTakenForGuesses / playerStats.totalGuesses).toFixed(2) : 0}</td>
+                <td>{playerStats.totalGuesses > 0 ? (playerStats.timeTakenForGuesses / playerStats.totalGuesses).toFixed(2) : (0).toFixed(2)}</td>
                 <td>{playerStats.secondsPlayed.toFixed(2)}</td>
               </tr>
             ))}
