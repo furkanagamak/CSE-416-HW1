@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
-import './PostGameModal.css'; 
 import SecretWordModal from "../SecretWord";
-
 
 const GameRoomContext = createContext(undefined);
 
@@ -16,53 +14,16 @@ export const useGameRoomContext = () => {
   return context;
 };
 
-const PostGameModal = ({ stats, setPage }) => {
-  if (!stats || stats.length === 0) return null;
-
-  return (
-    <div className={`modal ${stats ? "open" : ""}`}>
-      <div className="modal-content">
-        <h2>Game Results</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Result</th>
-              <th>Total Guesses</th>
-              <th>Time Played (seconds)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.map((playerStats, index) => (
-              <tr key={index}>
-                <td>{playerStats.username}</td>
-                <td>{playerStats.isWinner ? "Won" : "Lost"}</td>
-                <td>{playerStats.totalGuesses}</td>
-                <td>{playerStats.secondsPlayed}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button onClick={() => setPage("main")}>Return to Home</button>
-      </div>
-    </div>
-  );
-};
-
-
-export const GameRoomContextProvider = ({ children, setPage}) => {
+export const GameRoomContextProvider = ({ children }) => {
   const [myGuesses, setMyGuesses] = useState([]);
   const [opponentGuesses, setOpponentGuesses] = useState([]);
   const [room, setRoom] = useState(undefined);
   const [inQueue, setInQueue] = useState(false);
+  const [yourTurn, setYourTurn] = useState(false);
   const [isSecretWordSubmitted, setIsSecretWordSubmitted] = useState(false);
   const [isSecretModalOpen, setIsSecretModalOpen] = useState(true);
   const [secretModalContent, setSecretModalContent] = useState("enterWord");
-  const [gameStarted, setGameStarted] = useState(false);
-  const [yourTurn, setYourTurn] = useState(false);
   const socket = useSocketContext();
-
-  const [postGameStats, setPostGameStats] = useState(null);
 
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
@@ -96,11 +57,6 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
       setYourTurn(checkTurn);
     });
 
-    socket.on("gameCompleted", (stats) => {
-      setPostGameStats(stats);
-      setYourTurn(true);
-    });
-
     socket.on('secretWordConfirmed', () => {    //listener for secret word submissions
       setIsSecretWordSubmitted(true);
       setSecretModalContent("waitingForOpponent");
@@ -108,18 +64,7 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
 
     socket.on('gameStart', () => {    //leaves secret word modal open 
       setIsSecretModalOpen(false);
-      setGameStarted(true);
     });
-
-    // Return a cleanup function to remove event listeners
-    return () => {
-      socket.off("gameCompleted");
-      socket.off("receive guess");
-      socket.off("confirm join");
-      socket.off("take turn");
-      socket.off("gameStart");
-      socket.off("secretWordConfirmed");
-    };
   });
 
   const contextValue = {
@@ -146,8 +91,7 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
       {isSecretModalOpen && <SecretWordModal isOpen={isSecretModalOpen} onClose={handleSecretModalClose} />}    
-      {gameStarted && <Modal isOpen={yourTurn} />}
-      <PostGameModal stats={postGameStats} setPage={setPage} />
+      <Modal isOpen={yourTurn} />
       {children}
     </GameRoomContext.Provider>
   );

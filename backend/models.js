@@ -20,11 +20,13 @@ const gameSchema = new Schema({
 
 // PlayerGameStats Schema
 const playerGameStatsSchema = new Schema({
-  player_id: { type: Schema.Types.ObjectId, ref: "User" },
+  player_id: { type: Schema.Types.ObjectId, ref: "User" }, //This should be used once cookies and username assigning are implemented
+  socket_id: {type: String},  //using this temporarily, should be removed once above is implemented
   game_id: { type: Schema.Types.ObjectId, ref: "Game" },
   totalGuesses: { type: Number, default: 0 },
   secondsPlayed: { type: Number, default: 0 },
   isWinner: { type: Boolean, default: false },
+  secretWord: { type: String},
 });
 
 // Message Schema

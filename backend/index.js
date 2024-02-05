@@ -67,11 +67,13 @@ const initGameInstance = async (player1, player2) => {
   const playerWaitStats = new PlayerGameStats({
     player_id: playerWait._id,
     game_id: game._id,
+    socket_id: player1.id,  //temporary
   });
   const playerJoin = await User.findOne({ username: player2.id });
   const playerJoinStats = new PlayerGameStats({
     player_id: playerJoin._id,
     game_id: game._id,
+    socket_id: player2.id,  //temporary
   });
 
   await game.save();
@@ -204,6 +206,42 @@ io.on("connection", (socket) => {
     if (waitingPlayer && waitingPlayer.id === socket.id) waitingPlayer = null;
     console.log(`${socket.id} has disconnected!`);
   });
+
+
+  socket.on('chatMessage', (room, chatMessage) => {
+    const formattedMessage = {
+      text: chatMessage.text,
+      sender: socket.id,
+      time: chatMessage.time
+    };
+    io.to(room).emit('chatMessage', formattedMessage);
+  });
+
+  socket.on('submitSecretWord', async ({ roomId, secretWord }) => {
+    console.log(roomId, secretWord);
+        // Find the game using roomId
+        const game = await Game.findOne({ roomId: roomId });
+        if (!game) {
+            console.error('Game not found');
+            return;
+        }
+        // Find the player's game statistics
+        const playerStat = await PlayerGameStats.findOne({ game_id: game._id, socket_id: socket.id });
+        if (playerStat) {
+            playerStat.secretWord = secretWord;
+            await playerStat.save();
+
+            // Check if both players have submitted their secret words
+            const gameStats = await PlayerGameStats.find({ game_id: game._id });
+            if (gameStats.length === 2 && gameStats.every(stat => stat.secretWord)) {
+                io.to(roomId).emit('gameStart');
+            } else {
+                socket.emit('secretWordConfirmed');
+            }
+        } else {
+            console.error('Player stats not found');
+        }
+    });
 });
 
 // Route to get stats
