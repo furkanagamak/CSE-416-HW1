@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
-import './PostGameModal.css'; 
+import "./PostGameModal.css";
 import SecretWordModal from "../SecretWord";
-
 
 const GameRoomContext = createContext(undefined);
 
@@ -41,7 +40,14 @@ const PostGameModal = ({ stats, setPage }) => {
                 <td>{playerStats.isWinner ? "Won" : "Lost"}</td>
                 <td>{playerStats.totalGuesses}</td>
                 <td>{playerStats.timeTakenForGuesses.toFixed(2)}</td>
-                <td>{playerStats.totalGuesses > 0 ? (playerStats.timeTakenForGuesses / playerStats.totalGuesses).toFixed(2) : (0).toFixed(2)}</td>
+                <td>
+                  {playerStats.totalGuesses > 0
+                    ? (
+                        playerStats.timeTakenForGuesses /
+                        playerStats.totalGuesses
+                      ).toFixed(2)
+                    : (0).toFixed(2)}
+                </td>
                 <td>{playerStats.secondsPlayed.toFixed(2)}</td>
               </tr>
             ))}
@@ -53,8 +59,7 @@ const PostGameModal = ({ stats, setPage }) => {
   );
 };
 
-
-export const GameRoomContextProvider = ({ children, setPage}) => {
+export const GameRoomContextProvider = ({ children, setPage }) => {
   const [myGuesses, setMyGuesses] = useState([]);
   const [opponentGuesses, setOpponentGuesses] = useState([]);
   const [room, setRoom] = useState(undefined);
@@ -78,7 +83,7 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
       return window.alert("You need to enter a 5 letter word");
     const endTime = Date.now(); // Record the end time when the guess is submitted
     const duration = turnStartTime ? (endTime - turnStartTime) / 1000 : 0; // Calculate the duration in seconds
-    
+
     socket.emit("submit guess", guessWord, room, duration); // Send this duration to the server as well
     setTurnStartTime(null); // reset the turnStartTime after the guess is submitted
   };
@@ -113,12 +118,14 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
       setYourTurn(true);
     });
 
-    socket.on('secretWordConfirmed', () => {    //listener for secret word submissions
+    socket.on("secretWordConfirmed", () => {
+      //listener for secret word submissions
       setIsSecretWordSubmitted(true);
       setSecretModalContent("waitingForOpponent");
     });
 
-    socket.on('gameStart', () => {    //leaves secret word modal open 
+    socket.on("gameStart", () => {
+      //leaves secret word modal open
       setIsSecretModalOpen(false);
       setGameStarted(true);
     });
@@ -139,6 +146,8 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
     myGuesses,
     opponentGuesses,
     submitGuess,
+    yourTurn,
+    gameStarted,
     room,
     isSecretWordSubmitted,
     isSecretModalOpen,
@@ -157,19 +166,15 @@ export const GameRoomContextProvider = ({ children, setPage}) => {
   return (
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
-      {isSecretModalOpen && <SecretWordModal isOpen={isSecretModalOpen} onClose={handleSecretModalClose} />}    
-      {gameStarted && <Modal isOpen={yourTurn} />}
+      {isSecretModalOpen && (
+        <SecretWordModal
+          isOpen={isSecretModalOpen}
+          onClose={handleSecretModalClose}
+        />
+      )}
+      {/* {gameStarted && <Modal isOpen={yourTurn} />} */}
       <PostGameModal stats={postGameStats} setPage={setPage} />
       {children}
     </GameRoomContext.Provider>
   );
 };
-
-
-const Modal = ({ isOpen }) => (
-  <div className={`modal ${isOpen ? "" : "open"}`}>
-    <div className="modal-content">
-      <p>Other player is taking their turn...</p>
-    </div>
-  </div>
-);
