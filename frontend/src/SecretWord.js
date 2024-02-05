@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SecretWord.css';
 import { useSocketContext } from './providers/SocketProvider';
-import { useGameRoomContext } from "./providers/GameRoomProvider";
+import { useGameRoomContext, checkWordExists } from "./providers/GameRoomProvider";
 
 const SecretWordModal = ({ isOpen }) => {
     const [word, setWord] = useState('');
@@ -9,7 +9,9 @@ const SecretWordModal = ({ isOpen }) => {
     const { room, secretModalContent } = useGameRoomContext();
     const socket = useSocketContext();
 
-    const validateWord = (inputWord) => {
+    
+
+    async function validateWord(inputWord) {
         // Check for non-letter characters first
         if (!/^[A-Za-z]+$/.test(inputWord)) {
             return "Word must contain only alphabet characters.";
@@ -23,12 +25,17 @@ const SecretWordModal = ({ isOpen }) => {
         if (letterSet.size !== inputWord.length) {
             return "Letters cannot repeat.";
         }
+        // Check if the word exists in the word list
+        const wordExists = await checkWordExists(inputWord);
+        if (!wordExists) {
+            return "Word must be a valid English word.";
+        }
         return "";
-    };
+    }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const lowerCaseWord = word.toLowerCase(); // Convert the word to lowercase before validation
-        const validationError = validateWord(lowerCaseWord);
+        const validationError = await validateWord(lowerCaseWord);
         if (validationError) {
             setError(validationError);
             return;

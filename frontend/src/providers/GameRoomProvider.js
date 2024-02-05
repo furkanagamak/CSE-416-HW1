@@ -15,6 +15,21 @@ export const useGameRoomContext = () => {
   return context;
 };
 
+// Function to check if a word exists in a .txt file
+export async function checkWordExists(word) {
+  try {
+    const response = await fetch('./wordList.txt');
+    const wordText = await response.text();
+    const words = wordText.split(/\r?\n/); // Split the file content by new line to get an array of words
+    console.log(words);
+    return words.includes(word.toLowerCase()); // Check if the word exists in the array, assuming case-insensitive comparison
+  } catch (err) {
+    console.error("Error reading file:", err);
+    return false; // Return false in case of an error
+  }
+}
+
+
 const PostGameModal = ({ stats, setPage }) => {
   if (!stats || stats.length === 0) return null;
 
