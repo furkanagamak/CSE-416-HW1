@@ -243,7 +243,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     );
   return (
     <GameRoomContext.Provider value={contextValue}>
-      <h1>Room: {room}</h1>
       <button onClick={handleForfeit} className="forfeitBtn">
         Forfeit
       </button>

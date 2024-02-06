@@ -47,7 +47,6 @@ const io = socketIo(server, {
 });
 
 let waitingPlayer = null;
-let currentRoomId = 1;
 const secret = "leave";
 
 // Function to start a countdown
@@ -72,9 +71,12 @@ const initGameInstance = async (player1, player2) => {
   if (Math.round(Math.random()) === 0) playerTakingTurn = player1;
   else playerTakingTurn = player2;
 
+  // Look up the game with the highest roomId
+  const gameWithHighestRoomId = await Game.findOne().sort({ roomId: -1 });
+
   // creates game instance
   const game = new Game({
-    roomId: currentRoomId,
+    roomId: gameWithHighestRoomId ? gameWithHighestRoomId.roomId + 1 : 1,
     playerTakingTurn: playerTakingTurn.id,
   });
 
@@ -105,14 +107,13 @@ const initGameInstance = async (player1, player2) => {
   player2._opponent = player1;
 
   // socket operations
-  player1.join(currentRoomId);
-  player2.join(currentRoomId);
-  console.log(`${player1.id} has joined room ${currentRoomId}`);
-  console.log(`${player2.id} has joined room ${currentRoomId}`);
+  player1.join(game.roomId);
+  player2.join(game.roomId);
+  console.log(`${player1.id} has joined room ${game.roomId}`);
+  console.log(`${player2.id} has joined room ${game.roomId}`);
 
-  io.to(currentRoomId).emit("confirm join", currentRoomId);
+  io.to(game.roomId).emit("confirm join", game.roomId);
 
-  currentRoomId++;
   waitingPlayer = null;
 };
 
