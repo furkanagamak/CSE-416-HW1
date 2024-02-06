@@ -246,6 +246,7 @@ io.on("connection", (socket) => {
     socket._game.playerTakingTurn = socket._opponent.id;
     await socket._game.save();
     io.to(roomId).emit("take turn", socket._opponent.id);
+    startCountdown(socket._opponent, roomId);
   });
 
   socket.on("forfeit", async () => {
