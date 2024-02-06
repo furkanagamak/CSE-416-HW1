@@ -117,7 +117,6 @@ const initGameInstance = async (player1, player2) => {
 };
 
 const endGame = async (socket, io, isForfeit) => {
-  await endGame(socket, io, false);
   socket._game.timeEnd = Date.now();
   await socket._game.save();
   socket._gameStats.isWinner = true;
