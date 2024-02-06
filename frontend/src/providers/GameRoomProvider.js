@@ -48,7 +48,7 @@ const PostGameModal = ({ stats, setPage, won, message }) => {
               <th>Number of Guesses</th>
               <th>Time Taken for Guesses (seconds)</th>
               <th>Average Time per Guess (seconds)</th>
-              <th>Time Played (seconds)</th>
+              <th>Total Time Played (seconds)</th>
             </tr>
           </thead>
           <tbody>
@@ -153,7 +153,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         won: won,
         message: message,
       });
-      setYourTurn(true);
+      setYourTurn(false);
       setCountdown(null); // Reset the countdown when the game is completed
     });
 

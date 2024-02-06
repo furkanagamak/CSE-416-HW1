@@ -111,7 +111,6 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player2.id} has joined room ${currentRoomId}`);
 
   io.to(currentRoomId).emit("confirm join", currentRoomId);
-  io.to(currentRoomId).emit("take turn", playerTakingTurn.id);
 
   currentRoomId++;
   waitingPlayer = null;
