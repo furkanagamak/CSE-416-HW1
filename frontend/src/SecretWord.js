@@ -6,7 +6,7 @@ import { useGameRoomContext, checkWordExists } from "./providers/GameRoomProvide
 const SecretWordModal = ({ isOpen }) => {
     const [word, setWord] = useState('');
     const [error, setError] = useState('');
-    const { room, secretModalContent } = useGameRoomContext();
+    const { room, secretModalContent, setMySecretWord } = useGameRoomContext();
     const socket = useSocketContext();
 
     
@@ -41,6 +41,7 @@ const SecretWordModal = ({ isOpen }) => {
             return;
         }
         setError('');
+        setMySecretWord(lowerCaseWord.toUpperCase());
         socket.emit('submitSecretWord', { roomId: room, secretWord: lowerCaseWord });
     };
 
