@@ -5,9 +5,13 @@ import './statScreen.css';
 
 const socket = io('http://localhost:5000'); // Connect to the backend server
 
-const StatScreen = () => {
+const StatScreen = ({ setPage }) => {
   const [stats, setStats] = useState([]);
   const [timeHorizon, setTimeHorizon] = useState('all'); // 'all' or 'lastHour'
+
+  const handleHomeScreen = () => {
+    setPage('main');
+  };
 
   // Define columns for react-table
   const columns = useMemo(() => [
@@ -55,7 +59,10 @@ const StatScreen = () => {
   return (
     <div>
       <h2>Player Stats</h2>
-      <div>
+      <div>      
+        <button className="back-to-main" onClick={handleHomeScreen}>
+        Back to Main
+      </button>
         <button onClick={() => setTimeHorizon('all')}>All Time</button>
         <button onClick={() => setTimeHorizon('lastHour')}>Last Hour</button>
       </div>

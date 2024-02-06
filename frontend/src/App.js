@@ -45,7 +45,7 @@ const GamePage = ({ setPage }) => {
 const StatPage = ({ setPage }) => {
   return (
     <div>
-      <StatScreen />
+      <StatScreen setPage={setPage}/>
     </div>
   );
 };
