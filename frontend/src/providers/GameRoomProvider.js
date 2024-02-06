@@ -15,13 +15,16 @@ export const useGameRoomContext = () => {
   return context;
 };
 
-const PostGameModal = ({ stats, setPage }) => {
+const PostGameModal = ({ stats, setPage, won, message }) => {
   if (!stats || stats.length === 0) return null;
 
   return (
     <div className={`modal ${stats ? "open" : ""}`}>
       <div className="modal-content">
         <h2>Game Results</h2>
+        <h2 className={won ? "PostGameModal-WonMsg" : "PostGameModal-LostMsg"}>
+          {message}
+        </h2>
         <table>
           <thead>
             <tr>
@@ -117,8 +120,12 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       }
     });
 
-    socket.on("gameCompleted", (stats) => {
-      setPostGameStats(stats);
+    socket.on("gameCompleted", (stats, won, message) => {
+      setPostGameStats({
+        stats: stats,
+        won: won,
+        message: message,
+      });
       setYourTurn(true);
     });
 
@@ -180,7 +187,14 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         />
       )}
       {/* {gameStarted && <Modal isOpen={yourTurn} />} */}
-      <PostGameModal stats={postGameStats} setPage={setPage} />
+      {postGameStats && (
+        <PostGameModal
+          stats={postGameStats.stats}
+          setPage={setPage}
+          won={postGameStats.won}
+          message={postGameStats.message}
+        />
+      )}
       {children}
     </GameRoomContext.Provider>
   );

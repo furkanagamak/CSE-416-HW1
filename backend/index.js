@@ -101,7 +101,7 @@ const initGameInstance = async (player1, player2) => {
   waitingPlayer = null;
 };
 
-const endGame = async (socket, io) => {
+const endGame = async (socket, io, isForfeit) => {
   socket._game.timeEnd = Date.now();
   await socket._game.save();
   socket._gameStats.isWinner = true;
@@ -149,9 +149,17 @@ const endGame = async (socket, io) => {
     timeTakenForGuesses: socket._opponent._gameStats.timeTakenForGuesses,
   };
 
+  const winnerMsg = isForfeit ? "You Won! (Opponent Forfeited)" : "You Won!";
+  const loserMsg = isForfeit ? "You Lost! (You forfeited)" : "You Lost!";
+
   // Emit post-game stats to each player
-  socket.emit("gameCompleted", [playerStats, opponentStats]);
-  socket._opponent.emit("gameCompleted", [playerStats, opponentStats]);
+  socket.emit("gameCompleted", [playerStats, opponentStats], true, winnerMsg);
+  socket._opponent.emit(
+    "gameCompleted",
+    [playerStats, opponentStats],
+    false,
+    loserMsg
+  );
   io.sockets.emit("updateStats");
 };
 
@@ -200,7 +208,7 @@ io.on("connection", (socket) => {
 
     // Check if the guess is exactly the same as the secret
     if (guess === opponentSecret) {
-      await endGame(socket, io);
+      await endGame(socket, io, false);
       return;
     }
 
@@ -211,7 +219,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("forfeit", async () => {
-    await endGame(socket._opponent, io);
+    await endGame(socket._opponent, io, true);
   });
 
   socket.on("gameCompleted", async () => {
