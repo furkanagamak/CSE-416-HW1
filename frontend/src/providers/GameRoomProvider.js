@@ -93,6 +93,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     socket.emit("join queue");
   };
 
+  const handleForfeit = () => {
+    socket.emit("forfeit");
+  };
+
   useEffect(() => {
     socket.on("receive guess", (guessWord, numOfMatching, socket_id) => {
       if (socket_id === socket.id)
@@ -166,6 +170,9 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   return (
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
+      <button onClick={handleForfeit} className="forfeitBtn">
+        Forfeit
+      </button>
       {isSecretModalOpen && (
         <SecretWordModal
           isOpen={isSecretModalOpen}
