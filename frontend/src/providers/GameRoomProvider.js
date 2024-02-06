@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
 import "./PostGameModal.css";
 import SecretWordModal from "../SecretWord";
+import AnimatedText from "./AnimatedText";
 
 const GameRoomContext = createContext(undefined);
 
@@ -18,7 +19,7 @@ export const useGameRoomContext = () => {
 // Function to check if a word exists in a .txt file
 export async function checkWordExists(word) {
   try {
-    const response = await fetch('./wordList.txt');
+    const response = await fetch("./wordList.txt");
     const wordText = await response.text();
     const words = wordText.split(/\r?\n/); // Split the file content by new line to get an array of words
     console.log(words);
@@ -29,14 +30,16 @@ export async function checkWordExists(word) {
   }
 }
 
-
-const PostGameModal = ({ stats, setPage }) => {
+const PostGameModal = ({ stats, setPage, won, message }) => {
   if (!stats || stats.length === 0) return null;
 
   return (
     <div className={`modal ${stats ? "open" : ""}`}>
       <div className="modal-content">
         <h2>Game Results</h2>
+        <h2 className={won ? "PostGameModal-WonMsg" : "PostGameModal-LostMsg"}>
+          {message}
+        </h2>
         <table>
           <thead>
             <tr>
@@ -90,6 +93,12 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [turnStartTime, setTurnStartTime] = useState(null);
   const [countdown, setCountdown] = useState(null);
 
+  const leaveQueue = () => {
+    socket.emit("leave queue");
+    setInQueue(false);
+    setPage("main");
+  };
+
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
   };
@@ -108,6 +117,14 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     setInQueue(true);
     socket.emit("join queue");
   };
+
+  const handleForfeit = () => {
+    socket.emit("forfeit");
+  };
+
+  useEffect(() => {
+    handleJoinQueue();
+  }, []);
 
   useEffect(() => {
     socket.on("receive guess", (guessWord, numOfMatching, socket_id) => {
@@ -129,9 +146,14 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       }
     });
 
-    socket.on("gameCompleted", (stats) => {
-      setPostGameStats(stats);
-      setYourTurn(false);
+    socket.on("gameCompleted", (stats, won, message) => {
+      console.log(stats);
+      setPostGameStats({
+        stats: stats,
+        won: won,
+        message: message,
+      });
+      setYourTurn(true);
       setCountdown(null); // Reset the countdown when the game is completed
     });
 
@@ -175,7 +197,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         });
       }, 1000);
     }
-  
+
     return () => clearInterval(interval);
   }, [countdown]);
 
@@ -193,17 +215,38 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     secretModalContent,
   };
 
-  if (yourTurn === undefined) return <div>Loading ...</div>;
-  if (!inQueue)
+  const WaitingModal = ({ isOpen, message, onClose }) => {
+    if (!isOpen) return null;
     return (
-      <div>
-        <button onClick={handleJoinQueue}>Click here to join queue</button>
+      <div className="waitingModal">
+        <div className="waitingModalContent">
+          <div>
+            <button className="closeWaitButton" onClick={onClose}>
+              X
+            </button>
+          </div>
+          <div>{message}</div>
+          <AnimatedText text="GUESS5" />
+        </div>
       </div>
     );
-  if (!room) return <div>Waiting for other players to join ...</div>;
+  };
+
+  if (yourTurn === undefined) return <div>Loading ...</div>;
+  if (!room)
+    return (
+      <WaitingModal
+        isOpen={!room}
+        message="Waiting for other players to join..."
+        onClose={leaveQueue}
+      />
+    );
   return (
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
+      <button onClick={handleForfeit} className="forfeitBtn">
+        Forfeit
+      </button>
       {isSecretModalOpen && (
         <SecretWordModal
           isOpen={isSecretModalOpen}
@@ -211,9 +254,19 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         />
       )}
       {/* {gameStarted && <Modal isOpen={yourTurn} />} */}
-      <PostGameModal stats={postGameStats} setPage={setPage} />
-      {countdown !== null && (<h2>Time Left: <span style={{ color: 'green' }}>{countdown}</span> seconds</h2>)}
-
+      {postGameStats && (
+        <PostGameModal
+          stats={postGameStats.stats}
+          setPage={setPage}
+          won={postGameStats.won}
+          message={postGameStats.message}
+        />
+      )}
+      {countdown !== null && (
+        <h2>
+          Time Left: <span style={{ color: "green" }}>{countdown}</span> seconds
+        </h2>
+      )}
       {children}
     </GameRoomContext.Provider>
   );
