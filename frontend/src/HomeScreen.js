@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const HomeScreen = ({ setPage }) => {
-
   const handleViewStats = () => {
-    setPage('stats');
+    setPage("stats");
   };
 
   return (

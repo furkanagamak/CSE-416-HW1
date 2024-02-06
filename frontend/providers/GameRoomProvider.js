@@ -57,12 +57,14 @@ export const GameRoomContextProvider = ({ children }) => {
       setYourTurn(checkTurn);
     });
 
-    socket.on('secretWordConfirmed', () => {    //listener for secret word submissions
+    socket.on("secretWordConfirmed", () => {
+      //listener for secret word submissions
       setIsSecretWordSubmitted(true);
       setSecretModalContent("waitingForOpponent");
     });
 
-    socket.on('gameStart', () => {    //leaves secret word modal open 
+    socket.on("gameStart", () => {
+      //leaves secret word modal open
       setIsSecretModalOpen(false);
     });
   });
@@ -90,13 +92,17 @@ export const GameRoomContextProvider = ({ children }) => {
   return (
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
-      {isSecretModalOpen && <SecretWordModal isOpen={isSecretModalOpen} onClose={handleSecretModalClose} />}    
+      {isSecretModalOpen && (
+        <SecretWordModal
+          isOpen={isSecretModalOpen}
+          onClose={handleSecretModalClose}
+        />
+      )}
       <Modal isOpen={yourTurn} />
       {children}
     </GameRoomContext.Provider>
   );
 };
-
 
 const Modal = ({ isOpen }) => (
   <div className={`modal ${isOpen ? "" : "open"}`}>
