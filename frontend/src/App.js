@@ -7,6 +7,7 @@ import CurrentGuesses from "./CurrentGuesses";
 import StatScreen from "./statScreen";
 import ChatBox from "./chatBox";
 import ListBoxContainer from "./userLists";
+import HomeScreen from "./HomeScreen";
 
 function App() {
   const [page, setPage] = useState("main");
@@ -16,6 +17,7 @@ function App() {
       <SocketContextProvider>
         {page === "main" && <MainPage setPage={setPage} />}
         {page === "game" && <GamePage setPage={setPage} />}
+        {page === "stats" && <StatPage setPage={setPage} />}
       </SocketContextProvider>
     </div>
   );
@@ -24,8 +26,7 @@ function App() {
 const MainPage = ({ setPage }) => {
   return (
     <div>
-      <button onClick={() => setPage("game")}>Game screen</button>
-      <StatScreen />
+      <HomeScreen setPage={setPage} />
     </div>
   );
 };
@@ -38,6 +39,14 @@ const GamePage = ({ setPage }) => {
       <ChatBox />
       <ListBoxContainer />
     </GameRoomContextProvider>
+  );
+};
+
+const StatPage = ({ setPage }) => {
+  return (
+    <div>
+      <StatScreen />
+    </div>
   );
 };
 

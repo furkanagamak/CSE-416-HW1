@@ -1,43 +1,54 @@
 .modal-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .modal-content th, .modal-content td {
-    text-align: left;
-    padding: 8px 16px;
-    border-bottom: 1px solid #ddd;
-    min-width: 120px;
-  }
-  
-  .modal-content th {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .modal-content tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .modal-content tr:hover {
-    background-color: #ddd;
-  }
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
 
-  .modal-content button {
-    background-color: #4CAF50; 
-    color: white;
-    padding: 10px 20px; 
-    border: none; 
-    cursor: pointer; 
-    outline: none;
-    margin-top: 20px; 
-    transition: background-color 0.3s; 
-    border-radius: 5px;
-  }
-  
-  .modal-content button:hover {
-    background-color: #45a049;
-  }
-  
-  
+.modal-content th,
+.modal-content td {
+  text-align: left;
+  padding: 8px 16px;
+  border-bottom: 1px solid #ddd;
+  min-width: 120px;
+}
+
+.modal-content th {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-content tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.modal-content tr:hover {
+  background-color: #ddd;
+}
+
+.modal-content button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+  border-radius: 5px;
+}
+
+.modal-content button:hover {
+  background-color: #45a049;
+}
+
+.PostGameModal-WonMsg {
+  color: green;
+}
+
+.PostGameModal-LostMsg {
+  color: red;
+}
+
+.forfeitBtn {
+  background-color: red;
+}
