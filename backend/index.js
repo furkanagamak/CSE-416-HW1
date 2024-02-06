@@ -117,6 +117,7 @@ const initGameInstance = async (player1, player2) => {
 };
 
 const endGame = async (socket, io, isForfeit) => {
+  clearTimeout(socket._turnTimeout); // Clear the turn time out
   socket._game.timeEnd = Date.now();
   await socket._game.save();
   socket._gameStats.isWinner = true;
@@ -249,6 +250,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("forfeit", async () => {
+    clearTimeout(socket._turnTimeout); // Clear the turn time out
     await endGame(socket._opponent, io, true);
   });
 
