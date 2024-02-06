@@ -147,6 +147,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     });
 
     socket.on("gameCompleted", (stats, won, message) => {
+      console.log(stats);
       setPostGameStats({
         stats: stats,
         won: won,
@@ -166,6 +167,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       //leaves secret word modal open
       setIsSecretModalOpen(false);
       setGameStarted(true);
+    });
+
+    socket.on("countdown start", (countdownTime) => {
+      setCountdown(countdownTime / 1000); // Convert milliseconds to seconds
     });
 
     // Return a cleanup function to remove event listeners
@@ -262,8 +267,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
           Time Left: <span style={{ color: "green" }}>{countdown}</span> seconds
         </h2>
       )}
-
-      <PostGameModal stats={postGameStats} setPage={setPage} />
       {children}
     </GameRoomContext.Provider>
   );
