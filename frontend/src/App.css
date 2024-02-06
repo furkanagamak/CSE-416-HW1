@@ -52,15 +52,53 @@
 }
 
 /* GuessBoard */
+/* GuessBoard.css */
 .GuessBoard {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.GuessBoard-Header {
+  text-decoration: underline;
+  width: 100%;
 }
 
 .GuessBoard-section {
-  width: 50%;
+  width: 48%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 10px;
+}
+
+.GuessBoard-List {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.GuessBoard-List li {
+  display: flex;
+}
+
+.GuessBoard-List p {
+  font-style: italic;
+  color: #555;
+  margin-right: 5px;
+}
+
+@media (max-width: 600px) {
+  .GuessBoard {
+    flex-direction: column;
+  }
+
+  .GuessBoard-section {
+    width: 100%;
+  }
 }
 
 /* */
