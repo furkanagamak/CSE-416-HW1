@@ -8,7 +8,6 @@ const AnimatedText = ({ text }) => {
         let currentText = '';
         let index = 0;
 
-        // Function to update text
         const updateText = () => {
             if (index < text.length) {
                 currentText += text[index++];
@@ -22,12 +21,12 @@ const AnimatedText = ({ text }) => {
             }
         };
 
-        // Start the text update cycle
+
         const intervalId = setInterval(updateText, 500);
 
-        // Cleanup on component unmount
+ 
         return () => clearInterval(intervalId);
-    }, [text]); // Depend on the text prop
+    }, [text]);
 
     return (
         <div className="letter-animation">

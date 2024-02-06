@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 const HomeScreen = ({ setPage }) => {
-  const [playerName, setPlayerName] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Add a loading state
 
   const handleViewStats = () => {
     setPage('stats');
