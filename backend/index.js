@@ -50,6 +50,22 @@ let waitingPlayer = null;
 let currentRoomId = 1;
 const secret = "leave";
 
+// Function to start a countdown
+const startCountdown = (player, roomId) => {
+  const countdownTime = 10000; // 60 seconds in milliseconds
+  // Emit an event to the player and their opponent indicating the countdown start
+  io.to(player.id).emit('countdown start', countdownTime);
+  io.to(player._opponent.id).emit('countdown start', countdownTime);
+  player._turnTimeout = setTimeout(() => {
+    console.log(`Player ${player.id}'s turn skipped due to timeout`);
+    // Switch turns
+    player._game.playerTakingTurn = player._opponent.id;
+    io.to(roomId).emit('take turn', player._opponent.id);
+    player._game.save();
+    startCountdown(player._opponent, roomId);
+  }, countdownTime);
+};
+
 const initGameInstance = async (player1, player2) => {
   // decides which player goes first
   let playerTakingTurn;
@@ -95,7 +111,6 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player2.id} has joined room ${currentRoomId}`);
 
   io.to(currentRoomId).emit("confirm join", currentRoomId);
-  io.to(currentRoomId).emit("take turn", playerTakingTurn.id);
 
   currentRoomId++;
   waitingPlayer = null;
@@ -137,6 +152,7 @@ io.on("connection", (socket) => {
       return console.error(
         "An user attempted to take a turn when it is not their turn"
       );
+      clearTimeout(socket._turnTimeout);
 
     const opponentSecret = socket._opponent._gameStats.secretWord;
     const numOfMatching = countCorrectLetters(guess, opponentSecret);
@@ -149,10 +165,10 @@ io.on("connection", (socket) => {
       socket._game.timeEnd = Date.now();
       await socket._game.save();
       socket._gameStats.isWinner = true;
-      socket._gameStats.secondsPlayed = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
+      socket._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
       await socket._gameStats.save();
       socket._opponent._gameStats.isWinner = false;
-      socket._opponent._gameStats.secondsPlayed = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
+      socket._opponent._gameStats.secondsPlayed = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
       await socket._opponent._gameStats.save();
 
       // Use playerGameStatsSchema's player_id field to find the user by ID, then update the user's gamesPlayed, gamesWon, totalGuesses, and secondsPlayed fields
@@ -171,7 +187,7 @@ io.on("connection", (socket) => {
       await opponent.save();
 
       // Calculate post-game statistics to send to the frontend
-      const totalTimeTaken = socket._gameStats.timeTakenForGuesses + socket._opponent._gameStats.timeTakenForGuesses;
+      const totalTimeTaken = (socket._game.timeEnd.getTime() - socket._game.timeStarted.getTime()) / 1000;
       const playerStats = {
         username: socket._user.username,
         isWinner: true,
@@ -198,6 +214,7 @@ io.on("connection", (socket) => {
     socket._game.playerTakingTurn = socket._opponent.id;
     await socket._game.save();
     io.to(roomId).emit("take turn", socket._opponent.id);
+    startCountdown(socket._opponent, roomId);
   });
 
   socket.on("gameCompleted", async () => {
@@ -242,6 +259,8 @@ io.on("connection", (socket) => {
             const gameStats = await PlayerGameStats.find({ game_id: game._id });
             if (gameStats.length === 2 && gameStats.every(stat => stat.secretWord)) {
                 io.to(roomId).emit('gameStart');
+                io.to(roomId).emit("take turn", socket._game.playerTakingTurn);
+                startCountdown(io.sockets.sockets.get(socket._game.playerTakingTurn), roomId);
             } else {
                 socket.emit('secretWordConfirmed');
             }

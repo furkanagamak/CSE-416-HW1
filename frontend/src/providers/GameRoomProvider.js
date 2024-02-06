@@ -45,7 +45,7 @@ const PostGameModal = ({ stats, setPage }) => {
               <th>Number of Guesses</th>
               <th>Time Taken for Guesses (seconds)</th>
               <th>Average Time per Guess (seconds)</th>
-              <th>Time Played (seconds)</th>
+              <th>Total Time Played (seconds)</th>
             </tr>
           </thead>
           <tbody>
@@ -88,6 +88,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
 
   const [postGameStats, setPostGameStats] = useState(null);
   const [turnStartTime, setTurnStartTime] = useState(null);
+  const [countdown, setCountdown] = useState(null);
 
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
@@ -130,7 +131,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
 
     socket.on("gameCompleted", (stats) => {
       setPostGameStats(stats);
-      setYourTurn(true);
+      setYourTurn(false);
+      setCountdown(null); // Reset the countdown when the game is completed
     });
 
     socket.on("secretWordConfirmed", () => {
@@ -145,6 +147,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       setGameStarted(true);
     });
 
+    socket.on("countdown start", (countdownTime) => {
+      setCountdown(countdownTime / 1000); // Convert milliseconds to seconds
+    });
+
     // Return a cleanup function to remove event listeners
     return () => {
       socket.off("gameCompleted");
@@ -155,6 +161,23 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       socket.off("secretWordConfirmed");
     };
   });
+
+  useEffect(() => {
+    let interval = null;
+    if (countdown !== null) {
+      interval = setInterval(() => {
+        setCountdown((prevCountdown) => {
+          if (prevCountdown <= 1) {
+            clearInterval(interval);
+            return null; // Countdown finished
+          }
+          return prevCountdown - 1;
+        });
+      }, 1000);
+    }
+  
+    return () => clearInterval(interval);
+  }, [countdown]);
 
   const contextValue = {
     socket,
@@ -189,6 +212,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       )}
       {/* {gameStarted && <Modal isOpen={yourTurn} />} */}
       <PostGameModal stats={postGameStats} setPage={setPage} />
+      {countdown !== null && (<h2>Time Left: <span style={{ color: 'green' }}>{countdown}</span> seconds</h2>)}
+
       {children}
     </GameRoomContext.Provider>
   );
