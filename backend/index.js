@@ -111,6 +111,7 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player2.id} has joined room ${currentRoomId}`);
 
   io.to(currentRoomId).emit("confirm join", currentRoomId);
+  io.to(currentRoomId).emit("take turn", playerTakingTurn.id);
 
   currentRoomId++;
   waitingPlayer = null;
@@ -209,6 +210,19 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("leave queue", () => {
+    if (waitingPlayer == socket) {
+      waitingPlayer = null;
+      console.log(`${socket.id} has left the queue`);
+
+      socket.emit("left queue", { success: true });
+    } else {
+      console.log(
+        `${socket.id} attempted to leave the queue but was not waiting`
+      );
+    }
+  });
+
   socket.on("submit guess", async (guess, roomId, guessDuration) => {
     if (socket.id !== socket._game.playerTakingTurn)
       return console.error(
@@ -232,7 +246,6 @@ io.on("connection", (socket) => {
     socket._game.playerTakingTurn = socket._opponent.id;
     await socket._game.save();
     io.to(roomId).emit("take turn", socket._opponent.id);
-    startCountdown(socket._opponent, roomId);
   });
 
   socket.on("forfeit", async () => {

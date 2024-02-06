@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketProvider";
 import "./PostGameModal.css";
 import SecretWordModal from "../SecretWord";
+import AnimatedText from "./AnimatedText";
 
 const GameRoomContext = createContext(undefined);
 
@@ -47,7 +48,7 @@ const PostGameModal = ({ stats, setPage, won, message }) => {
               <th>Number of Guesses</th>
               <th>Time Taken for Guesses (seconds)</th>
               <th>Average Time per Guess (seconds)</th>
-              <th>Total Time Played (seconds)</th>
+              <th>Time Played (seconds)</th>
             </tr>
           </thead>
           <tbody>
@@ -92,6 +93,12 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [turnStartTime, setTurnStartTime] = useState(null);
   const [countdown, setCountdown] = useState(null);
 
+  const leaveQueue = () => {
+    socket.emit("leave queue");
+    setInQueue(false);
+    setPage("main");
+  };
+
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
   };
@@ -114,6 +121,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const handleForfeit = () => {
     socket.emit("forfeit");
   };
+
+  useEffect(() => {
+    handleJoinQueue();
+  }, []);
 
   useEffect(() => {
     socket.on("receive guess", (guessWord, numOfMatching, socket_id) => {
@@ -155,10 +166,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       //leaves secret word modal open
       setIsSecretModalOpen(false);
       setGameStarted(true);
-    });
-
-    socket.on("countdown start", (countdownTime) => {
-      setCountdown(countdownTime / 1000); // Convert milliseconds to seconds
     });
 
     // Return a cleanup function to remove event listeners
@@ -203,14 +210,32 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     secretModalContent,
   };
 
-  if (yourTurn === undefined) return <div>Loading ...</div>;
-  if (!inQueue)
+  const WaitingModal = ({ isOpen, message, onClose }) => {
+    if (!isOpen) return null;
     return (
-      <div>
-        <button onClick={handleJoinQueue}>Click here to join queue</button>
+      <div className="waitingModal">
+        <div className="waitingModalContent">
+          <div>
+            <button className="closeWaitButton" onClick={onClose}>
+              X
+            </button>
+          </div>
+          <div>{message}</div>
+          <AnimatedText text="GUESS5" />
+        </div>
       </div>
     );
-  if (!room) return <div>Waiting for other players to join ...</div>;
+  };
+
+  if (yourTurn === undefined) return <div>Loading ...</div>;
+  if (!room)
+    return (
+      <WaitingModal
+        isOpen={!room}
+        message="Waiting for other players to join..."
+        onClose={leaveQueue}
+      />
+    );
   return (
     <GameRoomContext.Provider value={contextValue}>
       <h1>Room: {room}</h1>
@@ -238,6 +263,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         </h2>
       )}
 
+      <PostGameModal stats={postGameStats} setPage={setPage} />
       {children}
     </GameRoomContext.Provider>
   );
