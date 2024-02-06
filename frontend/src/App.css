@@ -2,6 +2,132 @@
 * {
   margin: 0;
 }
+
+/*Home Screen*/
+.HomeScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.FindGame, .ViewStats {
+  background-color: #4CAF50;
+  color: white;
+  margin: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.FindGame {
+  padding: 20px 25px;
+  font-size: 1.3rem; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ViewStats {
+  padding: 15px 20px; 
+  font-size: 1rem; 
+}
+
+.FindGame:hover, .ViewStats:hover {
+  opacity: 0.8;
+}
+
+.MatchingModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5); 
+  display: flex;
+  align-items: start; 
+  justify-content: center; 
+  z-index: 1000; 
+}
+
+.ModalContent {
+  margin-top: 13vh;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  position: relative;
+  width: auto; 
+  max-width: 400px; 
+}
+
+.CloseButton {
+  position: absolute; 
+  top: 0;
+  right: 0; 
+  padding: 5px;
+  cursor: pointer;
+  font-size: 1rem; 
+  font-weight: bold;
+}
+
+.CloseButton:hover {
+  color: #f44336; 
+}
+
+.waitingModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.waitingModalContent {
+  position: relative;
+  margin-top: 5%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.closeWaitButton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  padding: 0px;
+  cursor: pointer;
+  font-size: 20px;
+  background-color: transparent; 
+  color: grey; 
+  border: none; 
+}
+
+.closeWaitButton:hover {
+  color: black; 
+  background-color: transparent;
+}
+
+
+.letter-animation {
+  display: flex; 
+  justify-content: center; 
+  align-items: start; 
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.letter {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
 /* Guess Form */
 .guessForm {
   display: flex;
@@ -35,20 +161,6 @@
 
 .greenButton:hover {
   background-color: darkgreen;
-}
-
-.button-disabled {
-  background-color: #ccc;
-  color: #666;
-  cursor: not-allowed;
-  padding: 10px;
-  border: none;
-  font-size: 1rem;
-  border-radius: 5px;
-}
-
-.button-disabled:hover {
-  background-color: #ccc;
 }
 
 /* GuessBoard */
