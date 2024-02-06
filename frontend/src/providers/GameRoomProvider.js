@@ -15,6 +15,20 @@ export const useGameRoomContext = () => {
   return context;
 };
 
+// Function to check if a word exists in a .txt file
+export async function checkWordExists(word) {
+  try {
+    const response = await fetch("./wordList.txt");
+    const wordText = await response.text();
+    const words = wordText.split(/\r?\n/); // Split the file content by new line to get an array of words
+    console.log(words);
+    return words.includes(word.toLowerCase()); // Check if the word exists in the array, assuming case-insensitive comparison
+  } catch (err) {
+    console.error("Error reading file:", err);
+    return false; // Return false in case of an error
+  }
+}
+
 const PostGameModal = ({ stats, setPage, won, message }) => {
   if (!stats || stats.length === 0) return null;
 
@@ -33,7 +47,7 @@ const PostGameModal = ({ stats, setPage, won, message }) => {
               <th>Number of Guesses</th>
               <th>Time Taken for Guesses (seconds)</th>
               <th>Average Time per Guess (seconds)</th>
-              <th>Time Played (seconds)</th>
+              <th>Total Time Played (seconds)</th>
             </tr>
           </thead>
           <tbody>
@@ -76,6 +90,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
 
   const [postGameStats, setPostGameStats] = useState(null);
   const [turnStartTime, setTurnStartTime] = useState(null);
+  const [countdown, setCountdown] = useState(null);
 
   const handleSecretModalClose = () => {
     setIsSecretModalOpen(false);
@@ -127,6 +142,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         message: message,
       });
       setYourTurn(true);
+      setCountdown(null); // Reset the countdown when the game is completed
     });
 
     socket.on("secretWordConfirmed", () => {
@@ -141,6 +157,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       setGameStarted(true);
     });
 
+    socket.on("countdown start", (countdownTime) => {
+      setCountdown(countdownTime / 1000); // Convert milliseconds to seconds
+    });
+
     // Return a cleanup function to remove event listeners
     return () => {
       socket.off("gameCompleted");
@@ -151,6 +171,23 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       socket.off("secretWordConfirmed");
     };
   });
+
+  useEffect(() => {
+    let interval = null;
+    if (countdown !== null) {
+      interval = setInterval(() => {
+        setCountdown((prevCountdown) => {
+          if (prevCountdown <= 1) {
+            clearInterval(interval);
+            return null; // Countdown finished
+          }
+          return prevCountdown - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [countdown]);
 
   const contextValue = {
     socket,
@@ -195,6 +232,12 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
           message={postGameStats.message}
         />
       )}
+      {countdown !== null && (
+        <h2>
+          Time Left: <span style={{ color: "green" }}>{countdown}</span> seconds
+        </h2>
+      )}
+
       {children}
     </GameRoomContext.Provider>
   );
