@@ -155,7 +155,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         won: won,
         message: message,
       });
-      setYourTurn(true);
+      setYourTurn(false);
       setCountdown(null); // Reset the countdown when the game is completed
     });
 
@@ -247,7 +247,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     );
   return (
     <GameRoomContext.Provider value={contextValue}>
-      <h1>Room: {room}</h1>
       {mySecretWord && <h2 style={{ textAlign: 'center' }}>Your secret word: {mySecretWord}</h2>}
       <button onClick={handleForfeit} className="forfeitBtn">
         Forfeit

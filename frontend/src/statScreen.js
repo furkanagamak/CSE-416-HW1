@@ -5,19 +5,23 @@ import './statScreen.css';
 
 const socket = io('http://localhost:5000'); // Connect to the backend server
 
-const StatScreen = () => {
+const StatScreen = ({ setPage }) => {
   const [stats, setStats] = useState([]);
   const [timeHorizon, setTimeHorizon] = useState('all'); // 'all' or 'lastHour'
+
+  const handleHomeScreen = () => {
+    setPage('main');
+  };
 
   // Define columns for react-table
   const columns = useMemo(() => [
     { Header: 'Player', accessor: 'username' },
     { Header: 'Games Played', accessor: 'gamesPlayed' },
     { Header: 'Games Won', accessor: 'gamesWon' },
-    { Header: 'Win Ratio', accessor: d => (d.gamesPlayed ? (d.gamesWon / d.gamesPlayed).toFixed(2) : 0), id: 'winRatio' },
+    { Header: 'Win Ratio', accessor: d => (d.gamesPlayed ? (d.gamesWon / d.gamesPlayed).toFixed(2) : (0).toFixed(2)), id: 'winRatio' },
     { Header: 'Total Guesses', accessor: 'totalGuesses' },
-    { Header: 'Average Guesses/Game', accessor: d => (d.gamesPlayed ? (d.totalGuesses / d.gamesPlayed).toFixed(2) : 0), id: 'avgGuesses' },
-    { Header: 'Average Time/Game (s)', accessor: d => (d.gamesPlayed ? (d.secondsPlayed / d.gamesPlayed).toFixed(2) : 0), id: 'avgTime' },
+    { Header: 'Average Guesses/Game', accessor: d => (d.gamesPlayed ? (d.totalGuesses / d.gamesPlayed).toFixed(2) : (0).toFixed(2)), id: 'avgGuesses' },
+    { Header: 'Average Time/Game (s)', accessor: d => (d.gamesPlayed ? (d.secondsPlayed / d.gamesPlayed).toFixed(2) : (0).toFixed(2)), id: 'avgTime' },
   ], []);
 
   // Fetch stats on component mount and listen for updates
@@ -55,7 +59,10 @@ const StatScreen = () => {
   return (
     <div>
       <h2>Player Stats</h2>
-      <div>
+      <div>      
+        <button className="back-to-main" onClick={handleHomeScreen}>
+        Back to Main
+      </button>
         <button onClick={() => setTimeHorizon('all')}>All Time</button>
         <button onClick={() => setTimeHorizon('lastHour')}>Last Hour</button>
       </div>
