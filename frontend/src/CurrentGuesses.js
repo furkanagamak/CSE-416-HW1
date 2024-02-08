@@ -12,13 +12,13 @@ const CurrentGuesses = () => {
           <ul className="GuessBoard-List">
             {myGuesses.map((myGuess, index) => (
               <li key={index}>
-                <p>{myGuess.guessWord}</p>
-                <b>{myGuess.numOfMatching}</b>
+                <p className="guess-word-small">{myGuess.guessWord.toUpperCase()}</p>
+                <b className="num-matching">{myGuess.numOfMatching}</b>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No guesses yet.</p>
+          <p className="guess-word-small">No guesses yet.</p>
         )}
       </section>
 
@@ -28,8 +28,8 @@ const CurrentGuesses = () => {
           <ul className="GuessBoard-List">
             {opponentGuesses.map((opponentGuess, index) => (
               <li key={index}>
-                <p>{opponentGuess.guessWord}</p>
-                <b>{opponentGuess.numOfMatching}</b>
+                <p className="guess-word-small">{opponentGuess.guessWord.toUpperCase()}</p>
+                <b className="num-matching">{opponentGuess.numOfMatching}</b>
               </li>
             ))}
           </ul>

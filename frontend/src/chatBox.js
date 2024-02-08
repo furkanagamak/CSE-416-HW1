@@ -56,15 +56,14 @@ const ChatBox = () => {
               {!isSentByCurrentUser && (
                 <>
                   {/*<span className="timestamp">{msg.time}</span>*/}
-                  <span className="message-sender">{msg.sender}:  </span>
-
+                  <span className="message-sender">{msg.sender}:  
+                  </span>
                 </>
               )}
-              <p>{msg.text}</p>
+              <p> {msg.text}</p>
               {isSentByCurrentUser && (
                 <>
-                  <span className="message-sender">     :{`${msg.sender}`}</span>
-                  {/*<span className="timestamp">{msg.time}</span>*/}
+                  <span className="message-sender">     </span>
                 </>
               )}
             </div>

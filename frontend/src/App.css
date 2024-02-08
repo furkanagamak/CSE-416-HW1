@@ -150,6 +150,16 @@
   border-radius: 5px;
 }
 
+
+.guess-word-small{
+  font-size: 23px;
+}
+.num-matching{
+
+  font-size: 23px;
+  color: green;
+}
+
 .greenButton {
   background-color: green;
   color: white;
@@ -178,6 +188,7 @@
 .GuessBoard-Header {
   text-decoration: underline;
   width: 100%;
+  font-size:32px;
 }
 
 .GuessBoard-section {
@@ -199,7 +210,7 @@
 }
 
 .GuessBoard-List p {
-  font-style: italic;
+  font-weight: 700;
   color: #555;
   margin-right: 5px;
 }

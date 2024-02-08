@@ -87,6 +87,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [secretModalContent, setSecretModalContent] = useState("enterWord");
   const [gameStarted, setGameStarted] = useState(false);
   const [yourTurn, setYourTurn] = useState(false);
+  const [mySecretWord, setMySecretWord] = useState("");
+
   const socket = useSocketContext();
 
   const [postGameStats, setPostGameStats] = useState(null);
@@ -213,6 +215,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     isSecretModalOpen,
     handleSecretModalClose,
     secretModalContent,
+    mySecretWord,
+    setMySecretWord,
   };
 
   const WaitingModal = ({ isOpen, message, onClose }) => {
@@ -243,6 +247,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     );
   return (
     <GameRoomContext.Provider value={contextValue}>
+      {mySecretWord && <h2 style={{ textAlign: 'center' }}>Your secret word: {mySecretWord}</h2>}
       <button onClick={handleForfeit} className="forfeitBtn">
         Forfeit
       </button>

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useGameRoomContext, checkWordExists } from "./providers/GameRoomProvider";
+import AnimatedText from "./providers/AnimatedText";
+
 
 const GuessingController = () => {
   const [word, setWord] = useState("");
@@ -25,7 +27,7 @@ const GuessingController = () => {
         <input
           type="text"
           maxLength={5}
-          placeholder="enter your guess word here ..."
+          placeholder="Enter guess here ..."
           value={word}
           onChange={(e) => setWord(e.target.value.toLowerCase())} // Automatically convert to lowercase
           className="guessForm-input"
@@ -38,9 +40,10 @@ const GuessingController = () => {
       <>
         <input
           type="text"
-          placeholder="waiting for opponent"
+          placeholder="Enter guess here ..."
           className="guessForm-input"
-          disabled
+          value={word}
+          onChange={(e) => setWord(e.target.value.toLowerCase())} // Automatically convert to lowercase
         />
         <button type="submit" className="button-disabled" disabled={true}>
           Submit
@@ -48,12 +51,16 @@ const GuessingController = () => {
       </>
     );
 
-  return (
-    <form onSubmit={handleWordSubmit} className="guessForm">
-      <h1 className="guessForm-header">Enter your five letter guess word!</h1>
-      {inputBox}
-    </form>
-  );
+    return (
+      <form onSubmit={handleWordSubmit} className="guessForm">
+        {gameStarted && yourTurn ? (
+          <h1 className="guessForm-header">Enter your five letter guess word!</h1>
+        ) : (
+          <h1 className="guessForm-header">Waiting for opponent</h1> 
+        )}
+        {inputBox}
+      </form>
+    );
 };
 
 export default GuessingController;
