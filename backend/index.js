@@ -1,4 +1,5 @@
 // server.js
+const cookie = require('cookie');
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -6,7 +7,9 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
+
 const { User, Game, PlayerGameStats, Message } = require("./models");
+const { Socket } = require('dgram');
 
 const fs = require("fs").promises;
 const filePath = "./wordList.txt";
@@ -48,6 +51,34 @@ const io = socketIo(server, {
 
 let waitingPlayer = null;
 const secret = "leave";
+
+
+app.get('/get-or-assign-name', async (req, res) => {
+  if (req.cookies.username) {
+    console.log("Username from cookie:", req.cookies.username); // Log the username to the console
+    res.json({ username: req.cookies.username });
+  } else {
+    const names = ["Alice", "Tom", "Chad", "Emily", "Michael", "Sarah", "David", "Jessica", "Ryan", "Olivia"];
+    let usernameAssigned = false;
+    let username;
+    while (!usernameAssigned) {
+      username = names[Math.floor(Math.random() * names.length)];
+      try {
+        const userExists = await User.findOne({ username: username });
+        if (!userExists) {
+          const user = new User({ username: username });
+          await user.save();
+          res.cookie('username', username, { maxAge: 10000000 });
+          res.json({ username });
+          usernameAssigned = true;
+        }
+      } catch (error) {
+        console.error("Error checking or saving user:", error);
+      }
+    }
+  }
+});
+
 
 // Function to start a countdown
 const startCountdown = (player, roomId) => {
@@ -180,15 +211,28 @@ const endGame = async (socket, io, isForfeit) => {
   io.sockets.emit("updateStats");
 };
 
-io.on("connection", (socket) => {
-  console.log(`${socket.id} is connected!`);
-
-  const user = new User({ username: socket.id });
-  user.save();
+io.on("connection", async (socket) => {
+  const username = socket.handshake.query.username;
+  console.log(username);
+  
+  if (username) {
+    try {
+      const user = await User.findOne({ username: username });
+      if (user) {
+        console.log('User found:', user.username);
+        socket._user = user;
+        // Acknowledge user set
+        socket.emit("user set", user.username);
+      } else {
+        console.log('User not found with username:', username);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
 
   io.sockets.emit("updateStats");
-
-  socket._user = user;
   socket._game = null;
   socket._gameStats = null;
   socket._turnStart = null;
@@ -198,6 +242,7 @@ io.on("connection", (socket) => {
     // no one on the queue
     if (!waitingPlayer) {
       waitingPlayer = socket;
+      console.log(`${socket._user} 1is now waiting`);
       console.log(`${waitingPlayer.id} is now waiting `);
     }
     // someone waiting on the queue, intiate game instance
@@ -210,6 +255,7 @@ io.on("connection", (socket) => {
       initGameInstance(waitingPlayer, socket);
     }
   });
+
 
   socket.on("leave queue", () => {
     if (waitingPlayer == socket) {
