@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
+import { useUserContext } from "./UserProvider";
 
-const BACKEND_URI = "http://localhost:5000";
-const socket = io.connect(BACKEND_URI);
-
-const SocketContext = createContext(socket);
+const SocketContext = createContext(null);
 
 export const useSocketContext = () => {
   const context = useContext(SocketContext);
@@ -17,6 +15,12 @@ export const useSocketContext = () => {
 };
 
 export const SocketContextProvider = ({ children }) => {
+  const username = useUserContext();
+  const socket = io("http://localhost:5000", {
+    query: {
+      username: username,
+    },
+  });
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );

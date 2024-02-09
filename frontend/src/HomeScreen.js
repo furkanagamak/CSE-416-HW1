@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useUserContext } from "./providers/UserProvider";
+
+// const socket = io("http://localhost:5000");
 
 const HomeScreen = ({ setPage }) => {
+  const username = useUserContext();
+
   const handleViewStats = () => {
     setPage("stats");
   };
