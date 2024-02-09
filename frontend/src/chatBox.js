@@ -7,7 +7,7 @@ const ChatBox = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const context = useGameRoomContext();
-  const { room, oppUsername } = context;     //room id is used to render only messages sent within current room
+  const { room, oppUsername, myUsername } = context;     //room id is used to render only messages sent within current room
   const messagesEndRef = useRef(null);
   const socket = useSocketContext();
 
@@ -55,15 +55,15 @@ const ChatBox = () => {
             <div key={index} className={`message ${isSentByCurrentUser ? 'sent' : 'received'}`}>
               {!isSentByCurrentUser && (
                 <>
-                  {/*<span className="timestamp">{msg.time}</span>*/}
-                  <span className="message-sender">{oppUsername}:  
-                  </span>
+                <p> <span className="message-sender">{oppUsername}-  
+                  </span> {msg.text}</p>
+                 
                 </>
               )}
-              <p> {msg.text}</p>
               {isSentByCurrentUser && (
                 <>
-                  <span className="message-sender">     </span>
+                 <p> {msg.text} <span className="message-sender-self">   -{myUsername}</span></p>
+                  
                 </>
               )}
             </div>

@@ -29,15 +29,20 @@
 
   .message {
     width: 100%;
-    display: flex;
+    display: block;
     align-items: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     word-wrap: break-word;
     overflow-wrap: break-word; 
    white-space: pre-wrap;
    border-bottom: 1px solid #ddd; /* Add thin line for separation */
-    padding-bottom: 2px;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .message p {
+    max-width: 100%; /* Ensure it does not exceed its parent */
   }
 
   .message:not(:last-child) {
@@ -59,6 +64,11 @@
     margin-right: 8px;
     color:red;
   }
+  .message-sender-self{
+    font-size: 12px;
+    margin-right: 8px;
+    color:blue;
+  }
   .timestamp {
     font-size: 0.8em;
     margin-right: 10px;
@@ -72,4 +82,5 @@
   
   .chat-input button {
     width: 60px;
+    position: relative; top: -7px;
   }
