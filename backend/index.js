@@ -256,8 +256,14 @@ io.on("connection", async (socket) => {
         return console.log(
           `${socket.id} tried to join the queue but is already on the queue`
         );
-
-      initGameInstance(waitingPlayer, socket);
+        console.log('Countdown starts for 3 seconds before initiating the game');
+        io.to(waitingPlayer.id).emit("countdown start", 3);
+        io.to(socket.id).emit("countdown start", 3);
+        
+        setTimeout(() => {
+          console.log('Initiating game instance.');
+          initGameInstance(waitingPlayer, socket);
+        }, 3000);
     }
   });
 

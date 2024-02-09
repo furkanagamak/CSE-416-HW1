@@ -92,6 +92,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [postGameStats, setPostGameStats] = useState(null);
   const [turnStartTime, setTurnStartTime] = useState(null);
   const [countdown, setCountdown] = useState(null);
+  const [waitCountdown, setWaitCountdown] = useState(null);
 
   const leaveQueue = () => {
     socket.emit("leave queue");
@@ -215,30 +216,54 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     secretModalContent,
   };
 
-  const WaitingModal = ({ isOpen, message, onClose }) => {
+  useEffect(() => {
+    socket.on("countdown start", (countdownTime) => {
+      console.log(`Countdown starts: ${countdownTime} seconds`);
+      setWaitCountdown(countdownTime);
+      const interval = setInterval(() => {
+        setWaitCountdown((currentCountdown) => {
+          if (currentCountdown <= 1) {
+            clearInterval(interval);
+            return null; 
+          }
+          return currentCountdown - 1;
+        });
+      }, 1000);
+  
+      return () => clearInterval(interval);
+    });
+    return () => socket.off("countdown start");
+  }, [socket]);
+
+  const WaitingModal = ({ isOpen, message, onClose, waitCountdown }) => {
     if (!isOpen) return null;
     return (
       <div className="waitingModal">
         <div className="waitingModalContent">
           <div>
-            <button className="closeWaitButton" onClick={onClose}>
-              X
-            </button>
+            <button className="closeWaitButton" onClick={onClose}>X</button>
           </div>
           <div>{message}</div>
-          <AnimatedText text="GUESS5" />
+          {/* Only render AnimatedText if countdown is null */}
+          {waitCountdown === null && <AnimatedText text="GUESS5" />}
         </div>
       </div>
     );
   };
-
+  
   if (yourTurn === undefined) return <div>Loading ...</div>;
-  if (!room)
+  if (!room )
     return (
       <WaitingModal
         isOpen={!room}
-        message="Waiting for other players to join..."
+        message={waitCountdown !== null ? (
+          <>
+            <div style={{ textAlign: 'center', width: '100%' }}>Match Found!</div>
+            <div>Game Starting in: <strong>{waitCountdown}</strong></div>
+          </>
+        ) : "Waiting for the other player to join..."}
         onClose={leaveQueue}
+        waitCountdown={waitCountdown} // Pass countdown as a prop
       />
     );
   return (
