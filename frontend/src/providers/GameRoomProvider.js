@@ -287,10 +287,12 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     );
   return (
     <GameRoomContext.Provider value={contextValue}>
-      {mySecretWord && <h2 style={{ textAlign: 'center' }}>Your secret word: {mySecretWord}</h2>}
+      <div className="secretWordAndForfeitContainer">
       <button onClick={handleForfeit} className="forfeitBtn">
         Forfeit
       </button>
+      {mySecretWord && <h2 className="secretWordDisplay" style={{ textAlign: 'center' }}>Your secret word: {mySecretWord}</h2>}
+      </div>
       {isSecretModalOpen && (
         <SecretWordModal
           isOpen={isSecretModalOpen}

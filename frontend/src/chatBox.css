@@ -4,8 +4,8 @@
     margin-top: 70px;
     margin-bottom: 70px;
     padding: 10px;
-    max-width: 350px;
-    height: 550px;
+    max-width: 300px;
+    height: 500px;
     display: flex;
     overflow-y: auto;
     flex-direction: column;
@@ -25,7 +25,7 @@
     height: 10%;
   }
 
-  
+
 
   .message {
     width: 100%;
@@ -83,4 +83,6 @@
   .chat-input button {
     width: 60px;
     position: relative; top: -7px;
+    background-color: green;
+    margin-right: 0.4px;
   }
