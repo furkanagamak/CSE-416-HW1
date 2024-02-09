@@ -4,8 +4,8 @@
     margin-top: 70px;
     margin-bottom: 70px;
     padding: 10px;
-    max-width: 300px;
-    height: 500px;
+    max-width: 350px;
+    height: 550px;
     display: flex;
     overflow-y: auto;
     flex-direction: column;
@@ -42,11 +42,11 @@
   }
 
   .message p {
-    max-width: 100%; /* Ensure it does not exceed its parent */
+    max-width: 100%; 
   }
 
   .message:not(:last-child) {
-    border-bottom: 1px solid #ddd; /* Ensure the line appears between messages */
+    border-bottom: 1px solid #ddd;
   }
   
   .message.sent {
@@ -84,5 +84,8 @@
     width: 60px;
     position: relative; top: -7px;
     background-color: green;
-    margin-right: 0.4px;
+    border: none;
+    padding: 6px 0;
+    border-radius: 5px;
+    cursor: pointer;
   }
