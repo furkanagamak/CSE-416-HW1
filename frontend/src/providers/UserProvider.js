@@ -18,7 +18,10 @@ export const UserContextProvider = ({ children }) => {
       credentials: "include",
     })
       .then((response) => response.json())
-      .then((data) => setUsername(data.username))
+      .then((data) => {
+        console.log("Fetched username:", data.username);
+        setUsername(data.username);
+      })
       .catch((error) => console.error("Error:", error));
   }, []);
 

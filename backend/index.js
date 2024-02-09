@@ -56,22 +56,15 @@ app.get("/get-or-assign-name", async (req, res) => {
     console.log("Username from cookie:", req.cookies.username); // Log the username to the console
     res.json({ username: req.cookies.username });
   } else {
-    const names = [
-      "Alice",
-      "Tom",
-      "Chad",
-      "Emily",
-      "Michael",
-      "Sarah",
-      "David",
-      "Jessica",
-      "Ryan",
-      "Olivia",
-    ];
+    const namesFilePath = "./names.txt"; // Adjust the path as necessary
+    const data = await fs.readFile(namesFilePath, 'utf8');
+    const names = data.split('\n'); // Split by new line and remove any empty lines
     let usernameAssigned = false;
     let username;
+
     while (!usernameAssigned) {
       username = names[Math.floor(Math.random() * names.length)];
+      username = username.trim();
       try {
         const userExists = await User.findOne({ username: username });
         if (!userExists) {
@@ -87,6 +80,9 @@ app.get("/get-or-assign-name", async (req, res) => {
     }
   }
 });
+
+
+
 
 // Function to start a countdown
 const startCountdown = (player, roomId) => {
