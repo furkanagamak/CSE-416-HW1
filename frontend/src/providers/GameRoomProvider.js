@@ -241,6 +241,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       <div className="waitingModal">
         <div className="waitingModalContent">
           <div>
+          {waitCountdown === null && <button className="closeWaitButton" onClick={onClose}>X</button>}
           </div>
           <div>{message}</div>
           {/* Only render AnimatedText if countdown is null */}
