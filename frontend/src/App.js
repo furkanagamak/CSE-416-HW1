@@ -1,6 +1,9 @@
 import "./App.css";
 import { useState } from "react";
-import { GameRoomContextProvider, useGameRoomContext } from "./providers/GameRoomProvider";
+import {
+  GameRoomContextProvider,
+  useGameRoomContext,
+} from "./providers/GameRoomProvider";
 import { SocketContextProvider } from "./providers/SocketProvider";
 import GuessingController from "./GuessingController";
 import CurrentGuesses from "./CurrentGuesses";
@@ -8,17 +11,20 @@ import StatScreen from "./statScreen";
 import ChatBox from "./chatBox";
 import ListBoxContainer from "./userLists";
 import HomeScreen from "./HomeScreen";
+import { UserContextProvider } from "./providers/UserProvider";
 
 function App() {
   const [page, setPage] = useState("main");
 
   return (
     <div className="App">
-      <SocketContextProvider>
-        {page === "main" && <MainPage setPage={setPage} />}
-        {page === "game" && <GamePage setPage={setPage} />}
-        {page === "stats" && <StatPage setPage={setPage} />}
-      </SocketContextProvider>
+      <UserContextProvider>
+        <SocketContextProvider>
+          {page === "main" && <MainPage setPage={setPage} />}
+          {page === "game" && <GamePage setPage={setPage} />}
+          {page === "stats" && <StatPage setPage={setPage} />}
+        </SocketContextProvider>
+      </UserContextProvider>
     </div>
   );
 }
@@ -45,7 +51,7 @@ const GamePage = ({ setPage }) => {
 const StatPage = ({ setPage }) => {
   return (
     <div>
-      <StatScreen setPage={setPage}/>
+      <StatScreen setPage={setPage} />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 // server.js
-const cookie = require('cookie');
+const cookie = require("cookie");
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -7,9 +7,8 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-
 const { User, Game, PlayerGameStats, Message } = require("./models");
-const { Socket } = require('dgram');
+const { Socket } = require("dgram");
 
 const fs = require("fs").promises;
 const filePath = "./wordList.txt";
@@ -52,13 +51,23 @@ const io = socketIo(server, {
 let waitingPlayer = null;
 const secret = "leave";
 
-
-app.get('/get-or-assign-name', async (req, res) => {
+app.get("/get-or-assign-name", async (req, res) => {
   if (req.cookies.username) {
     console.log("Username from cookie:", req.cookies.username); // Log the username to the console
     res.json({ username: req.cookies.username });
   } else {
-    const names = ["Alice", "Tom", "Chad", "Emily", "Michael", "Sarah", "David", "Jessica", "Ryan", "Olivia"];
+    const names = [
+      "Alice",
+      "Tom",
+      "Chad",
+      "Emily",
+      "Michael",
+      "Sarah",
+      "David",
+      "Jessica",
+      "Ryan",
+      "Olivia",
+    ];
     let usernameAssigned = false;
     let username;
     while (!usernameAssigned) {
@@ -68,7 +77,7 @@ app.get('/get-or-assign-name', async (req, res) => {
         if (!userExists) {
           const user = new User({ username: username });
           await user.save();
-          res.cookie('username', username, { maxAge: 10000000 });
+          res.cookie("username", username, { maxAge: 10000000 });
           res.json({ username });
           usernameAssigned = true;
         }
@@ -78,7 +87,6 @@ app.get('/get-or-assign-name', async (req, res) => {
     }
   }
 });
-
 
 // Function to start a countdown
 const startCountdown = (player, roomId) => {
@@ -112,13 +120,13 @@ const initGameInstance = async (player1, player2) => {
   });
 
   // initaite players' gameStat instances
-  const playerWait = await User.findOne({ username: player1.id });
+  const playerWait = await User.findOne({ _id: player1._user._id });
   const playerWaitStats = new PlayerGameStats({
     player_id: playerWait._id,
     game_id: game._id,
     socket_id: player1.id, //temporary
   });
-  const playerJoin = await User.findOne({ username: player2.id });
+  const playerJoin = await User.findOne({ _id: player2._user._id });
   const playerJoinStats = new PlayerGameStats({
     player_id: playerJoin._id,
     game_id: game._id,
@@ -214,23 +222,24 @@ const endGame = async (socket, io, isForfeit) => {
 io.on("connection", async (socket) => {
   const username = socket.handshake.query.username;
   console.log(username);
-  
   if (username) {
     try {
       const user = await User.findOne({ username: username });
       if (user) {
-        console.log('User found:', user.username);
+        console.log("User found:", user.username);
         socket._user = user;
+        console.log(
+          `${socket.id} has been associated with user: ${user.username}`
+        );
         // Acknowledge user set
         socket.emit("user set", user.username);
       } else {
-        console.log('User not found with username:', username);
+        console.log("User not found with username:", username);
       }
     } catch (err) {
       console.error(err);
     }
   }
-  
 
   io.sockets.emit("updateStats");
   socket._game = null;
@@ -255,7 +264,6 @@ io.on("connection", async (socket) => {
       initGameInstance(waitingPlayer, socket);
     }
   });
-
 
   socket.on("leave queue", () => {
     if (waitingPlayer == socket) {
@@ -451,20 +459,6 @@ app.get("/stats/lasthour", async (req, res) => {
     console.error("Error fetching last hour stats:", err);
     res.status(500).send("Error fetching last hour stats");
   }
-});
-
-// Socket.io for real-time updates
-io.on("connection", (socket) => {
-  console.log("New client connected");
-
-  socket.on("gameCompleted", async () => {
-    const stats = await User.find({});
-    io.sockets.emit("updateStats", stats);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
 });
 
 // Creates a user.
