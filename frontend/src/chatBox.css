@@ -2,11 +2,10 @@
     border: 1px solid #ddd;
     margin: 10px;
     margin-top: 70px;
-    padding-right: 500px;
+    margin-bottom: 70px;
     padding: 10px;
-    width: 300px;
-    height: 400px;
-    max-height: 300px;
+    max-width: 350px;
+    height: 550px;
     display: flex;
     overflow-y: auto;
     flex-direction: column;
@@ -15,7 +14,9 @@
   
   .chat-messages {
     overflow-y: auto;
+    
     height: 90%;
+    width: 100%;
     text-align: left;
   }
   
@@ -24,11 +25,28 @@
     height: 10%;
   }
 
+
+
   .message {
-    display: flex;
+    width: 100%;
+    display: block;
     align-items: center;
+    margin-top: 10px;
     margin-bottom: 10px;
     word-wrap: break-word;
+    overflow-wrap: break-word; 
+   white-space: pre-wrap;
+   border-bottom: 1px solid #ddd; /* Add thin line for separation */
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .message p {
+    max-width: 100%; 
+  }
+
+  .message:not(:last-child) {
+    border-bottom: 1px solid #ddd;
   }
   
   .message.sent {
@@ -43,6 +61,13 @@
   
   .message-sender{
     font-size: 12px;
+    margin-right: 8px;
+    color:red;
+  }
+  .message-sender-self{
+    font-size: 12px;
+    margin-right: 8px;
+    color:blue;
   }
   .timestamp {
     font-size: 0.8em;
@@ -57,4 +82,10 @@
   
   .chat-input button {
     width: 60px;
+    position: relative; top: -7px;
+    background-color: green;
+    border: none;
+    padding: 6px 0;
+    border-radius: 5px;
+    cursor: pointer;
   }

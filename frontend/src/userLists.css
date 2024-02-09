@@ -23,12 +23,16 @@ input {
 }
 
 button {
-  padding: 5px;
+  padding: 15px;
+  margin-bottom: 5px;
   cursor: pointer;
   margin-top: 5px;
+  background-color: green;
+
 }
 
 .alphabet-list {
+  font-size: 18px;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -38,7 +42,7 @@ button {
   background-color: #ff6347;
   color: #fff;
   border: none;
-  padding: 3px 8px;
+  padding: 2px 5px;
   margin-left: 5px;
   cursor: pointer;
 }

@@ -118,12 +118,14 @@ const initGameInstance = async (player1, player2) => {
     player_id: playerWait._id,
     game_id: game._id,
     socket_id: player1.id, //temporary
+    username: playerWait.username,
   });
   const playerJoin = await User.findOne({ _id: player2._user._id });
   const playerJoinStats = new PlayerGameStats({
     player_id: playerJoin._id,
     game_id: game._id,
     socket_id: player2.id, //temporary
+    username: playerJoin.username,
   });
 
   await game.save();
@@ -144,7 +146,8 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player1.id} has joined room ${game.roomId}`);
   console.log(`${player2.id} has joined room ${game.roomId}`);
 
-  io.to(game.roomId).emit("confirm join", game.roomId);
+
+  io.to(game.roomId).emit("confirm join", { roomId: game.roomId, player1Stats: playerWaitStats, player2Stats: playerJoinStats });
 
   waitingPlayer = null;
 };
@@ -497,17 +500,6 @@ app.post("/game", async (req, res) => {
   }
 });
 
-// Function to check if a word exists in a .txt file
-async function checkWordExists(word) {
-  try {
-    const data = await fs.readFile(filePath, "utf8");
-    const words = data.split(/\r?\n/); // Split the file content by new line to get an array of words
-    return words.includes(word); // Check if the word exists in the array
-  } catch (err) {
-    console.error("Error reading file:", err);
-    return false; // Return false in case of an error
-  }
-}
 
 function countCorrectLetters(needle, haystack) {
   // Convert both needle and haystack to lowercase for case-insensitive comparison

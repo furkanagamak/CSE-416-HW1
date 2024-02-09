@@ -14,7 +14,7 @@ const ListBoxContainer = () => {
     if (value.trim() === "") return;
 
     if (list.includes(value)) {
-      window.alert("Alphabet(s) already inserted!");
+      window.alert("Letter(s) already inserted!");
     } else {
       setList((prevList) => [...prevList, value]);
       setInputValue("");

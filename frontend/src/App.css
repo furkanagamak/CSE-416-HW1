@@ -150,6 +150,9 @@
   text-align: center;
 }
 
+.forfeitBtn{
+  padding: 20px;
+}
 
 /* Guess Form */
 .guessForm {
@@ -172,6 +175,16 @@
   border-radius: 5px;
 }
 
+
+.guess-word-small{
+  font-size: 23px;
+}
+.num-matching{
+
+  font-size: 23px;
+  color: green;
+}
+
 .greenButton {
   background-color: green;
   color: white;
@@ -191,15 +204,34 @@
 .GuessBoard {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   margin: 20px;
+  margin-left: 13.5%;
   text-align: center;
-  width: 100%;
+  width: 75%;
+}
+
+.secretWordAndForfeitContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; 
+}
+
+.forfeitBtn {
+  margin-left: auto; 
+}
+
+.secretWordDisplay {
+  flex-grow: 1; 
+  margin: 0 auto; 
+  margin-right: 5%;
 }
 
 .GuessBoard-Header {
   text-decoration: underline;
   width: 100%;
+  font-size:32px;
 }
 
 .GuessBoard-section {
@@ -208,6 +240,8 @@
   flex-direction: column;
   align-items: center;
   margin: 10px;
+  flex: 1; 
+  overflow-y: auto; 
 }
 
 .GuessBoard-List {
@@ -221,7 +255,7 @@
 }
 
 .GuessBoard-List p {
-  font-style: italic;
+  font-weight: 700;
   color: #555;
   margin-right: 5px;
 }
