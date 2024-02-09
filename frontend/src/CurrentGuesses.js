@@ -2,7 +2,7 @@ import { useGameRoomContext } from "./providers/GameRoomProvider";
 
 const CurrentGuesses = () => {
   const context = useGameRoomContext();
-  const { myGuesses, opponentGuesses } = context;
+  const { myGuesses, opponentGuesses, oppUsername } = context;
 
   return (
     <div className="GuessBoard">
@@ -23,7 +23,7 @@ const CurrentGuesses = () => {
       </section>
 
       <section className="GuessBoard-section">
-        <h1 className="GuessBoard-Header">Opponent's Guesses</h1>
+        <h1 className="GuessBoard-Header">{oppUsername}'s Guesses</h1>
         {opponentGuesses.length > 0 ? (
           <ul className="GuessBoard-List">
             {opponentGuesses.map((opponentGuess, index) => (

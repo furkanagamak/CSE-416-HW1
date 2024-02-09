@@ -150,6 +150,9 @@
   text-align: center;
 }
 
+.forfeitBtn{
+  padding: 20px;
+}
 
 /* Guess Form */
 .guessForm {

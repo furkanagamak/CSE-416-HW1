@@ -125,12 +125,14 @@ const initGameInstance = async (player1, player2) => {
     player_id: playerWait._id,
     game_id: game._id,
     socket_id: player1.id, //temporary
+    username: playerWait.username,
   });
   const playerJoin = await User.findOne({ _id: player2._user._id });
   const playerJoinStats = new PlayerGameStats({
     player_id: playerJoin._id,
     game_id: game._id,
     socket_id: player2.id, //temporary
+    username: playerJoin.username,
   });
 
   await game.save();
@@ -152,7 +154,7 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player2.id} has joined room ${game.roomId}`);
 
 
-  io.to(game.roomId).emit("confirm join", game.roomId);
+  io.to(game.roomId).emit("confirm join", { roomId: game.roomId, player1Stats: playerWaitStats, player2Stats: playerJoinStats });
 
   waitingPlayer = null;
 };

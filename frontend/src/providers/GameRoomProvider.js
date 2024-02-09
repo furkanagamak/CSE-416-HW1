@@ -87,6 +87,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [yourTurn, setYourTurn] = useState(false);
   const [mySecretWord, setMySecretWord] = useState("");
+  const [myUsername, setMyUsername] = useState("none");
+  const [oppUsername, setOppUsername] = useState("");
 
   const socket = useSocketContext();
 
@@ -135,8 +137,20 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         setOpponentGuesses([...opponentGuesses, { guessWord, numOfMatching }]);
     });
 
-    socket.on("confirm join", (roomId) => {
+    socket.on("confirm join", ({roomId, player1Stats, player2Stats}) => {
+      console.log(player1Stats,player2Stats);
+      console.log(socket.id);
       setRoom(roomId);
+      if(player1Stats.socket_id === socket.id){
+        setMyUsername(player1Stats.username);
+        setOppUsername(player2Stats.username);
+
+      }
+      else{
+        setMyUsername(player2Stats.username);
+        setOppUsername(player1Stats.username);
+      } 
+      console.log("My username",myUsername);
     });
 
     socket.on("take turn", (playerTakingTurn) => {
@@ -216,6 +230,8 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     secretModalContent,
     mySecretWord,
     setMySecretWord,
+    myUsername,
+    oppUsername
   };
 
   const WaitingModal = ({ isOpen, message, onClose }) => {
