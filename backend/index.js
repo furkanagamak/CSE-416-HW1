@@ -499,17 +499,6 @@ app.post("/game", async (req, res) => {
   }
 });
 
-// Function to check if a word exists in a .txt file
-async function checkWordExists(word) {
-  try {
-    const data = await fs.readFile(filePath, "utf8");
-    const words = data.split(/\r?\n/); // Split the file content by new line to get an array of words
-    return words.includes(word); // Check if the word exists in the array
-  } catch (err) {
-    console.error("Error reading file:", err);
-    return false; // Return false in case of an error
-  }
-}
 
 function countCorrectLetters(needle, haystack) {
   // Convert both needle and haystack to lowercase for case-insensitive comparison

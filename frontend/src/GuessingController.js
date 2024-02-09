@@ -56,7 +56,7 @@ const GuessingController = () => {
         {gameStarted && yourTurn ? (
           <h1 className="guessForm-header">Enter your five letter guess word!</h1>
         ) : (
-          <h1 className="guessForm-header">Waiting for opponent</h1> 
+          <h1 className="guessForm-header">Waiting for opponent...</h1> 
         )}
         {inputBox}
       </form>

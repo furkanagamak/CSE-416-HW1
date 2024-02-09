@@ -22,8 +22,7 @@ export async function checkWordExists(word) {
     const response = await fetch("./wordList.txt");
     const wordText = await response.text();
     const words = wordText.split(/\r?\n/); // Split the file content by new line to get an array of words
-    console.log(words);
-    return words.includes(word.toLowerCase()); // Check if the word exists in the array, assuming case-insensitive comparison
+    return words.includes(word.toLowerCase()); // Check if the word exists in the array
   } catch (err) {
     console.error("Error reading file:", err);
     return false; // Return false in case of an error
