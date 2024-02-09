@@ -262,6 +262,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
             <div>Game Starting in: <strong>{waitCountdown}</strong></div>
           </>
         ) : "Waiting for the other player to join..."}
+        onClose={leaveQueue}
         waitCountdown={waitCountdown} // Pass countdown as a prop
       />
     );
