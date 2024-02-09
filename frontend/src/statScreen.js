@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import io from 'socket.io-client';
 import './statScreen.css';
+import { useUserContext } from "./providers/UserProvider";
 
 const socket = io('http://localhost:5000'); // Connect to the backend server
 
 const StatScreen = ({ setPage }) => {
   const [stats, setStats] = useState([]);
   const [timeHorizon, setTimeHorizon] = useState('all'); // 'all' or 'lastHour'
+  const currentUsername = useUserContext();
 
   const handleHomeScreen = () => {
     setPage('main');
@@ -83,18 +85,18 @@ const StatScreen = ({ setPage }) => {
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map(row => {
-            prepareRow(row)
+            prepareRow(row);
+            const isCurrentUserRow = row.original.username === currentUsername;
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return (
-                    <td {...cell.getCellProps()} className={cell.column.id === 'username' ? 'highlight-player' : ''}>
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
+            <tr {...row.getRowProps()} className={isCurrentUserRow ? 'highlight-row' : ''}>
+              {row.cells.map(cell => {
+                return (
+                <td {...cell.getCellProps()}>
+                  {cell.render('Cell')}
+                  </td>
+                );})}
+            </tr>
+            );
           })}
         </tbody>
       </table>
