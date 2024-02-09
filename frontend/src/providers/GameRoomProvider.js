@@ -241,7 +241,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
       <div className="waitingModal">
         <div className="waitingModalContent">
           <div>
-            <button className="closeWaitButton" onClick={onClose}>X</button>
           </div>
           <div>{message}</div>
           {/* Only render AnimatedText if countdown is null */}
@@ -262,7 +261,6 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
             <div>Game Starting in: <strong>{waitCountdown}</strong></div>
           </>
         ) : "Waiting for the other player to join..."}
-        onClose={leaveQueue}
         waitCountdown={waitCountdown} // Pass countdown as a prop
       />
     );
