@@ -2,7 +2,7 @@ import { useGameRoomContext } from "./providers/GameRoomProvider";
 
 const CurrentGuesses = () => {
   const context = useGameRoomContext();
-  const { myGuesses, opponentGuesses } = context;
+  const { myGuesses, opponentGuesses, oppUsername } = context;
 
   return (
     <div className="GuessBoard">
@@ -12,24 +12,24 @@ const CurrentGuesses = () => {
           <ul className="GuessBoard-List">
             {myGuesses.map((myGuess, index) => (
               <li key={index}>
-                <p>{myGuess.guessWord}</p>
-                <b>{myGuess.numOfMatching}</b>
+                <p className="guess-word-small">{myGuess.guessWord.toUpperCase()}</p>
+                <b className="num-matching">{myGuess.numOfMatching}</b>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No guesses yet.</p>
+          <p className="guess-word-small">No guesses yet.</p>
         )}
       </section>
 
       <section className="GuessBoard-section">
-        <h1 className="GuessBoard-Header">Opponent's Guesses</h1>
+        <h1 className="GuessBoard-Header">{oppUsername}'s Guesses</h1>
         {opponentGuesses.length > 0 ? (
           <ul className="GuessBoard-List">
             {opponentGuesses.map((opponentGuess, index) => (
               <li key={index}>
-                <p>{opponentGuess.guessWord}</p>
-                <b>{opponentGuess.numOfMatching}</b>
+                <p className="guess-word-small">{opponentGuess.guessWord.toUpperCase()}</p>
+                <b className="num-matching">{opponentGuess.numOfMatching}</b>
               </li>
             ))}
           </ul>

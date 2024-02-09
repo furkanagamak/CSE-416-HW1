@@ -2,11 +2,10 @@
     border: 1px solid #ddd;
     margin: 10px;
     margin-top: 70px;
-    padding-right: 500px;
+    margin-bottom: 70px;
     padding: 10px;
-    width: 300px;
-    height: 400px;
-    max-height: 300px;
+    max-width: 350px;
+    height: 550px;
     display: flex;
     overflow-y: auto;
     flex-direction: column;
@@ -15,7 +14,9 @@
   
   .chat-messages {
     overflow-y: auto;
+    
     height: 90%;
+    width: 100%;
     text-align: left;
   }
   
@@ -24,11 +25,23 @@
     height: 10%;
   }
 
+  
+
   .message {
+    width: 100%;
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     word-wrap: break-word;
+    overflow-wrap: break-word; 
+   white-space: pre-wrap;
+   border-bottom: 1px solid #ddd; /* Add thin line for separation */
+    padding-bottom: 2px;
+  }
+
+  .message:not(:last-child) {
+    border-bottom: 1px solid #ddd; /* Ensure the line appears between messages */
   }
   
   .message.sent {
@@ -43,6 +56,8 @@
   
   .message-sender{
     font-size: 12px;
+    margin-right: 8px;
+    color:red;
   }
   .timestamp {
     font-size: 0.8em;

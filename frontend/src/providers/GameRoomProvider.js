@@ -22,8 +22,7 @@ export async function checkWordExists(word) {
     const response = await fetch("./wordList.txt");
     const wordText = await response.text();
     const words = wordText.split(/\r?\n/); // Split the file content by new line to get an array of words
-    console.log(words);
-    return words.includes(word.toLowerCase()); // Check if the word exists in the array, assuming case-insensitive comparison
+    return words.includes(word.toLowerCase()); // Check if the word exists in the array
   } catch (err) {
     console.error("Error reading file:", err);
     return false; // Return false in case of an error
@@ -87,6 +86,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [secretModalContent, setSecretModalContent] = useState("enterWord");
   const [gameStarted, setGameStarted] = useState(false);
   const [yourTurn, setYourTurn] = useState(false);
+  const [mySecretWord, setMySecretWord] = useState("");
+  const [myUsername, setMyUsername] = useState("none");
+  const [oppUsername, setOppUsername] = useState("");
+
   const socket = useSocketContext();
 
   const [postGameStats, setPostGameStats] = useState(null);
@@ -135,8 +138,20 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
         setOpponentGuesses([...opponentGuesses, { guessWord, numOfMatching }]);
     });
 
-    socket.on("confirm join", (roomId) => {
+    socket.on("confirm join", ({roomId, player1Stats, player2Stats}) => {
+      console.log(player1Stats,player2Stats);
+      console.log(socket.id);
       setRoom(roomId);
+      if(player1Stats.socket_id === socket.id){
+        setMyUsername(player1Stats.username);
+        setOppUsername(player2Stats.username);
+
+      }
+      else{
+        setMyUsername(player2Stats.username);
+        setOppUsername(player1Stats.username);
+      } 
+      console.log("My username",myUsername);
     });
 
     socket.on("take turn", (playerTakingTurn) => {
@@ -214,6 +229,10 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     isSecretModalOpen,
     handleSecretModalClose,
     secretModalContent,
+    mySecretWord,
+    setMySecretWord,
+    myUsername,
+    oppUsername
   };
 
   useEffect(() => {
@@ -268,6 +287,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
     );
   return (
     <GameRoomContext.Provider value={contextValue}>
+      {mySecretWord && <h2 style={{ textAlign: 'center' }}>Your secret word: {mySecretWord}</h2>}
       <button onClick={handleForfeit} className="forfeitBtn">
         Forfeit
       </button>

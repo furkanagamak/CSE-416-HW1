@@ -7,7 +7,7 @@ const ChatBox = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const context = useGameRoomContext();
-  const { room } = context;     //room id is used to render only messages sent within current room
+  const { room, oppUsername } = context;     //room id is used to render only messages sent within current room
   const messagesEndRef = useRef(null);
   const socket = useSocketContext();
 
@@ -26,7 +26,7 @@ const ChatBox = () => {
   const sendMessage = () => {       //message sending handler
       const chatMessage = {
         text: message,
-       // sender: socket.id,
+       sender: socket.id,
        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
     };
       socket.emit('chatMessage', room, chatMessage);
@@ -56,15 +56,14 @@ const ChatBox = () => {
               {!isSentByCurrentUser && (
                 <>
                   {/*<span className="timestamp">{msg.time}</span>*/}
-                  <span className="message-sender">{msg.sender}:  </span>
-
+                  <span className="message-sender">{oppUsername}:  
+                  </span>
                 </>
               )}
-              <p>{msg.text}</p>
+              <p> {msg.text}</p>
               {isSentByCurrentUser && (
                 <>
-                  <span className="message-sender">     :{`${msg.sender}`}</span>
-                  {/*<span className="timestamp">{msg.time}</span>*/}
+                  <span className="message-sender">     </span>
                 </>
               )}
             </div>
