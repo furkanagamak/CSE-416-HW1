@@ -6,6 +6,7 @@ const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const { faker } = require('@faker-js/faker');
 
 const { User, Game, PlayerGameStats, Message } = require("./models");
 const { Socket } = require("dgram");
@@ -56,15 +57,11 @@ app.get("/get-or-assign-name", async (req, res) => {
     console.log("Username from cookie:", req.cookies.username); // Log the username to the console
     res.json({ username: req.cookies.username });
   } else {
-    const namesFilePath = "./names.txt"; // Adjust the path as necessary
-    const data = await fs.readFile(namesFilePath, 'utf8');
-    const names = data.split('\n'); // Split by new line and remove any empty lines
     let usernameAssigned = false;
     let username;
 
     while (!usernameAssigned) {
-      username = names[Math.floor(Math.random() * names.length)];
-      username = username.trim();
+      username = faker.person.firstName();
       try {
         const userExists = await User.findOne({ username: username });
         if (!userExists) {
@@ -86,7 +83,7 @@ app.get("/get-or-assign-name", async (req, res) => {
 
 // Function to start a countdown
 const startCountdown = (player, roomId) => {
-  const countdownTime = 10000; // 60 seconds in milliseconds
+  const countdownTime = 60000; // 60 seconds in milliseconds
   // Emit an event to the player and their opponent indicating the countdown start
   io.to(player.id).emit("countdown start", countdownTime);
   io.to(player._opponent.id).emit("countdown start", countdownTime);
