@@ -6,7 +6,7 @@ const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const { faker } = require('@faker-js/faker');
+const { faker } = require("@faker-js/faker");
 
 const { User, Game, PlayerGameStats, Message } = require("./models");
 const { Socket } = require("dgram");
@@ -78,9 +78,6 @@ app.get("/get-or-assign-name", async (req, res) => {
   }
 });
 
-
-
-
 // Function to start a countdown
 const startCountdown = (player, roomId) => {
   const countdownTime = 60000; // 60 seconds in milliseconds
@@ -146,8 +143,11 @@ const initGameInstance = async (player1, player2) => {
   console.log(`${player1.id} has joined room ${game.roomId}`);
   console.log(`${player2.id} has joined room ${game.roomId}`);
 
-
-  io.to(game.roomId).emit("confirm join", { roomId: game.roomId, player1Stats: playerWaitStats, player2Stats: playerJoinStats });
+  io.to(game.roomId).emit("confirm join", {
+    roomId: game.roomId,
+    player1Stats: playerWaitStats,
+    player2Stats: playerJoinStats,
+  });
 
   waitingPlayer = null;
 };
@@ -256,14 +256,17 @@ io.on("connection", async (socket) => {
         return console.log(
           `${socket.id} tried to join the queue but is already on the queue`
         );
-        console.log('Countdown starts for 3 seconds before initiating the game');
-        io.to(waitingPlayer.id).emit("countdown starts", 3);
-        io.to(socket.id).emit("countdown starts", 3);
-        
-        setTimeout(() => {
-          console.log('Initiating game instance.');
-          initGameInstance(waitingPlayer, socket);
-        }, 3000);
+      console.log("Countdown starts for 3 seconds before initiating the game");
+      io.to(waitingPlayer.id).emit("countdown starts", 3);
+      io.to(socket.id).emit("countdown starts", 3);
+
+      const waitPlayer = waitingPlayer;
+      waitingPlayer = null;
+
+      setTimeout(() => {
+        console.log("Initiating game instance.");
+        initGameInstance(waitPlayer, socket);
+      }, 3000);
     }
   });
 
@@ -499,7 +502,6 @@ app.post("/game", async (req, res) => {
     res.status(400).send(err);
   }
 });
-
 
 function countCorrectLetters(needle, haystack) {
   // Convert both needle and haystack to lowercase for case-insensitive comparison
