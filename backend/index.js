@@ -85,8 +85,8 @@ app.get("/get-or-assign-name", async (req, res) => {
 const startCountdown = (player, roomId) => {
   const countdownTime = 60000; // 60 seconds in milliseconds
   // Emit an event to the player and their opponent indicating the countdown start
-  io.to(player.id).emit("countdown starts", countdownTime);
-  io.to(player._opponent.id).emit("countdown starts", countdownTime);
+  io.to(player.id).emit("countdown start", countdownTime);
+  io.to(player._opponent.id).emit("countdown start", countdownTime);
   player._turnTimeout = setTimeout(() => {
     console.log(`Player ${player.id}'s turn skipped due to timeout`);
     // Switch turns
