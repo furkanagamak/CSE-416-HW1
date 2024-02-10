@@ -4,6 +4,16 @@
 }
 
 /*Home Screen*/
+.HomeTitle {
+  font-size: 60px; 
+  margin-bottom: 25px; 
+}
+
+.Welcome {
+  font-size: 28px; 
+  margin-bottom: 25px; 
+}
+
 .HomeScreen {
   display: flex;
   flex-direction: column;
@@ -21,17 +31,18 @@
 }
 
 .FindGame {
-  padding: 20px 25px;
-  font-size: 1.3rem;
+  padding: 25px 30px;
+  font-size: 1.7rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-bottom: 15px;
 }
 
 .ViewStats {
-  padding: 15px 20px;
-  font-size: 1rem;
+  padding: 20px 25px;
+  font-size: 1.3rem;
 }
 
 .FindGame:hover,
