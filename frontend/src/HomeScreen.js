@@ -33,29 +33,29 @@ const HomeScreen = ({ setPage }) => {
             randomly selected to go first.
           </li>
           <li className="game-rules-main">
-            Each player takes turn being the guessing player:
+            Each player takes turn being the guessing player.
           </li>
           <li className="game-rules-main">
             The guessing player has 60 seconds to submit a valid 5 letter guess
-            word.
+            word:
           </li>
           <li className="game-rules-sub">
             If the 60 seconds passes and no submission has been made, the other
             player becomes the guessing player.
           </li>
           <li className="game-rules-sub">
-            Guesses restricted to 5 letter real words, can have repeating
+            Guesses are restricted to 5 letter real words, and can have repeating
             letters.
           </li>
           <li className="game-rules-sub">
             If the guess word is the secret word of the other player, then the
-            guessing player won.
+            guessing player wins.
           </li>
           <li className="game-rules-sub">
             If the guess word is not the secret word of the other player, then
-            the system should notify the guessing player how many letters of the
-            guess word are within the other player’s secret word. Then the other
-            player should take turns being the guessing player.
+            the game will notify the guessing player how many letters of the
+            guess word are within the other player's secret word. Then, the other
+            player will become the guessing player.
           </li>
         </ul>
       </div>
