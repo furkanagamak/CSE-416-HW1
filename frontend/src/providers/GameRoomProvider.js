@@ -236,7 +236,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   };
 
   useEffect(() => {
-    socket.on("countdown start", (countdownTime) => {
+    socket.on("countdown starts", (countdownTime) => {
       console.log(`Countdown starts: ${countdownTime} seconds`);
       setWaitCountdown(countdownTime);
       const interval = setInterval(() => {
@@ -251,7 +251,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   
       return () => clearInterval(interval);
     });
-    return () => socket.off("countdown start");
+    return () => socket.off("countdown starts");
   }, [socket]);
 
   const WaitingModal = ({ isOpen, message, onClose, waitCountdown }) => {
