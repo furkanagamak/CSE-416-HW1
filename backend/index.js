@@ -12,7 +12,6 @@ const { User, Game, PlayerGameStats } = require("./models");
 const { Socket } = require("dgram");
 
 const fs = require("fs").promises;
-const filePath = "./wordList.txt";
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/guess5", {
