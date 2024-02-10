@@ -5,13 +5,13 @@
 
 /*Home Screen*/
 .HomeTitle {
-  font-size: 60px; 
-  margin-bottom: 25px; 
+  font-size: 60px;
+  margin-bottom: 25px;
 }
 
 .Welcome {
-  font-size: 28px; 
-  margin-bottom: 25px; 
+  font-size: 28px;
+  margin-bottom: 25px;
 }
 
 .HomeScreen {
@@ -19,6 +19,43 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* GameRules.css */
+.game-rules {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.game-rules-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.game-rules-main {
+  color: #0066cc;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.game-rules-main::before {
+  content: "\2022"; /* Bullet point */
+  color: #333;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.game-rules-sub {
+  color: #000;
+  margin-left: 20px;
+  margin-bottom: 8px;
+}
+
+.game-rules-sub::before {
+  content: "-";
+  margin-right: 5px;
 }
 
 .FindGame,
@@ -161,7 +198,7 @@
   text-align: center;
 }
 
-.forfeitBtn{
+.forfeitBtn {
   padding: 20px;
 }
 
@@ -186,12 +223,10 @@
   border-radius: 5px;
 }
 
-
-.guess-word-small{
+.guess-word-small {
   font-size: 23px;
 }
-.num-matching{
-
+.num-matching {
   font-size: 23px;
   color: green;
 }
@@ -226,23 +261,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .forfeitBtn {
-  margin-left: auto; 
+  margin-left: auto;
 }
 
 .secretWordDisplay {
-  flex-grow: 1; 
-  margin: 0 auto; 
+  flex-grow: 1;
+  margin: 0 auto;
   margin-right: 5%;
 }
 
 .GuessBoard-Header {
   text-decoration: underline;
   width: 100%;
-  font-size:32px;
+  font-size: 32px;
 }
 
 .GuessBoard-section {
@@ -251,8 +286,8 @@
   flex-direction: column;
   align-items: center;
   margin: 10px;
-  flex: 1; 
-  overflow-y: auto; 
+  flex: 1;
+  overflow-y: auto;
 }
 
 .GuessBoard-List {
