@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
 import io from "socket.io-client";
 import { useUserContext } from "./UserProvider";
 

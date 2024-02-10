@@ -82,7 +82,7 @@
   
   .chat-input button {
     width: 60px;
-    position: relative; top: -7px;
+    top: -7px;
     background-color: green;
     border: none;
     padding: 6px 0;
