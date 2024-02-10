@@ -61,7 +61,11 @@ app.get("/get-or-assign-name", async (req, res) => {
     let username;
 
     while (!usernameAssigned) {
-      username = faker.person.firstName();
+      let adjective = faker.word.adjective();
+      let noun = faker.word.noun();
+      adjective = adjective.charAt(0).toUpperCase() + adjective.slice(1);
+      noun = noun.charAt(0).toUpperCase() + noun.slice(1);
+      username = adjective + '_' + noun;
       try {
         const userExists = await User.findOne({ username: username });
         if (!userExists) {
