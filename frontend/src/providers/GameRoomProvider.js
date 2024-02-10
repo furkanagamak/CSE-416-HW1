@@ -80,7 +80,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [myGuesses, setMyGuesses] = useState([]);
   const [opponentGuesses, setOpponentGuesses] = useState([]);
   const [room, setRoom] = useState(undefined);
-  const [inQueue, setInQueue] = useState(false);
+
   const [isSecretWordSubmitted, setIsSecretWordSubmitted] = useState(false);
   const [isSecretModalOpen, setIsSecretModalOpen] = useState(true);
   const [secretModalContent, setSecretModalContent] = useState("enterWord");
@@ -96,6 +96,9 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
   const [turnStartTime, setTurnStartTime] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const [waitCountdown, setWaitCountdown] = useState(null);
+
+  // eslint-disable-next-line no-unused-vars
+  const [inQueue, setInQueue] = useState(false);
 
   const leaveQueue = () => {
     socket.emit("leave queue");
@@ -128,6 +131,7 @@ export const GameRoomContextProvider = ({ children, setPage }) => {
 
   useEffect(() => {
     handleJoinQueue();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

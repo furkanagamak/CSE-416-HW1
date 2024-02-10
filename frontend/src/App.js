@@ -2,7 +2,6 @@ import "./App.css";
 import { useState } from "react";
 import {
   GameRoomContextProvider,
-  useGameRoomContext,
 } from "./providers/GameRoomProvider";
 import { SocketContextProvider } from "./providers/SocketProvider";
 import GuessingController from "./GuessingController";

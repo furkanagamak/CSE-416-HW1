@@ -95,7 +95,7 @@
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: center;
   z-index: 1000;
 }
@@ -134,7 +134,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   z-index: 1;
 }
 
@@ -167,7 +167,7 @@
 .letter-animation {
   display: flex;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
 
   overflow: hidden;
   white-space: nowrap;

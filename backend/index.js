@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { faker } = require("@faker-js/faker");
 
-const { User, Game, PlayerGameStats, Message } = require("./models");
+const { User, Game, PlayerGameStats } = require("./models");
 const { Socket } = require("dgram");
 
 const fs = require("fs").promises;

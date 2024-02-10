@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { useUserContext } from "./providers/UserProvider";
-
-// const socket = io("http://localhost:5000");
 
 const HomeScreen = ({ setPage }) => {
   const username = useUserContext();
@@ -24,7 +22,7 @@ const HomeScreen = ({ setPage }) => {
         <h2>Game Rules:</h2>
         <ul className="game-rules-list">
           <li className="game-rules-main">
-            There are two players, player A and player B.
+            This is a two-player, turn-based game.
           </li>
           <li className="game-rules-main">
             Both players choose a 5 letter secret word with no repeating

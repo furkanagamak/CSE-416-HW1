@@ -31,14 +31,7 @@ const playerGameStatsSchema = new Schema({
   username: { type: String },
 });
 
-// Message Schema
-const messageSchema = new Schema({
-  player1_id: { type: Schema.Types.ObjectId, ref: "User" },
-  player2_id: { type: Schema.Types.ObjectId, ref: "User" },
-  Message: String,
-  Game_id: { type: Schema.Types.ObjectId, ref: "Game" },
-  Created_time: { type: Date, default: Date.now },
-});
+
 
 // Define models based on the schemas
 const User = mongoose.model("User", userSchema);
@@ -47,6 +40,5 @@ const PlayerGameStats = mongoose.model(
   "PlayerGameStats",
   playerGameStatsSchema
 );
-const Message = mongoose.model("Message", messageSchema);
 
-module.exports = { User, Game, PlayerGameStats, Message };
+module.exports = { User, Game, PlayerGameStats};
